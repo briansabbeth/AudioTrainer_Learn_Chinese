@@ -653,8 +653,74 @@ public static void readClipInfo() {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id)
         {
-            Toast.makeText(MainActivity.this, ((TextView)view).getText(), Toast.LENGTH_LONG).show();
-            drawerLayout.closeDrawer(drawerListView);
+        	
+        	Toast.makeText(MainActivity.this, ((TextView)view).getText(), Toast.LENGTH_LONG).show();
+        	CharSequence clipIDSlideMenu = ((TextView)view).getText();
+        	
+        	Log.d(TAG, "From slidemenu the full string that was selected was " +clipIDSlideMenu);
+        	String clipsID = (String) clipIDSlideMenu.subSequence(0,5);
+        	
+        	Log.d(TAG, "From slidemenu the clip that was selected was " + clipsID );
+        	
+        	key = clipsID;
+
+             
+        	int newclipNum = 0;
+
+        	try 
+        	{
+        		newclipNum = Integer.parseInt(key);
+        	} 
+        	catch(NumberFormatException e) 
+        	{
+        		Log.d(TAG, "Could not parse" + e);
+        	} 
+        	index_getClip = newclipNum;
+        	
+        	sample = new File(clipDir, cliplist[index_getClip]);
+                
+              
+        	
+            try
+            {
+        	if (!clockRunning)
+    			toggleClock();
+    		
+    		if (sample != null) 
+    		{
+    			setHanzi("");
+    			if (mp != null) 
+    			{
+    				mp.stop();
+    				mp.release();
+    			}
+    			mp = new MediaPlayer();
+    			mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    			try 
+    			{
+    				mp.setDataSource(getApplicationContext(),
+    						Uri.fromFile(sample));
+    				mp.prepare();
+    				mp.start();
+    			} 
+    			catch (Exception e) 
+    			{
+    				Log.d(TAG, "Couldn't get mp3 file");
+    			}
+    		} 
+    	}
+    	catch (Exception e) 
+    	{
+    		initializationcheck();
+    	}
+    	
+       
+            databaseSwipeHandler();
+            createAndInsertHistModel();
+           
+            updateSlideHistList();  
+           
+          drawerLayout.closeDrawer(drawerListView);
  
         }
     }
@@ -1216,7 +1282,7 @@ public void onSwipeLeft() {
      updateSlideHistList();
         
       sample = new File(clipDir, cliplist[index_getClip]);
-      Log.e(TAG, "BJS This is inedex_getclip inside of play " + index_getClip);
+      Log.e(TAG, "BJS This is index_getclip inside of play " + index_getClip);
       Log.e(TAG, "BJS This is key inside of play " + key);
       Log.e(TAG, "BJS This is key inside of play " + sample);
          
@@ -1260,9 +1326,9 @@ public void onSwipeLeft() {
 	
     Log.i(LOGTAG, "BJS ABOUT TO OPEN HISTDATASOURCE");
     hist_datasource = new TingshuoHistDatasource(this);
-         hist_datasource.open();
-         Log.i(LOGTAG, "BJS OPENED HISTDATASOURCE");
-         outputHistModelList();
+    hist_datasource.open();
+    Log.i(LOGTAG, "BJS OPENED HISTDATASOURCE");
+    outputHistModelList();
 }
 
 public void onSwipeTop() {
@@ -1344,7 +1410,7 @@ public void updateSlideHistList()
 	
 	histlist.clear();
 	
-	for (int i = 0; i < histModelList.size(); i++)
+	for (int i = histModelList.size()-1; i >=0; i--)
 	{
 	
 	String tempconstr = histModelList.get(i).get_clip_id() + " " + histModelList.get(i).get_short_hanzi();
@@ -1621,7 +1687,8 @@ public void outputModel(Model model){
 public List<HistoryModel> getHistory()
 {
 List<HistoryModel> histModelList = hist_datasource.findAll();
-     return histListForOutput(histModelList);
+     
+return histListForOutput(histModelList);
 }
 
 /*
