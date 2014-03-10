@@ -7,14 +7,24 @@
 		android:key="first_category">
 		
 		<CheckBoxPreference 
-		    android:id="@+id/english_checkbox"
-			android:key="english mode"
-			android:summary="Enable or disable english mode"
-			android:title="Enable english" 
-			android:defaultValue="false"
-		/>
+		    android:id="@+id/night_mode_checkbox"
+			android:key="night_mode"
+			android:summary="Enable or disable night mode"
+			android:title="Enable Night Mode" 
+			android:defaultValue="false"	/>
 		
-
+        <ListPreference 
+			android:key="language_key"
+			android:summary="Chocie of language mode"
+			android:title="Language Mode"
+            android:defaultValue="1000"
+            android:entries="@array/updateInterval"
+            android:entryValues="@array/updateIntervalValues"   /> 
+            
+        <EditTextPreference
+	            android:key="time_usage_key"
+	            android:title="7 Day Usage"
+	            android:summary="A total of usage of 7 days." />
 
 	</PreferenceCategory>
 	

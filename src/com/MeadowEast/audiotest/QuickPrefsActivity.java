@@ -30,7 +30,7 @@ OnSharedPreferenceChangeListener{
         addPreferencesFromResource(R.xml.preferences); 
         
         PreferenceManager.setDefaultValues(this,R.xml.preferences, false);
-        CheckBoxPreference  pref = (CheckBoxPreference) findPreference("english mode");        
+        CheckBoxPreference  pref = (CheckBoxPreference) findPreference("night_mode");        
        
 /*        pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
         	 
@@ -109,7 +109,7 @@ OnSharedPreferenceChangeListener{
         SharedPreferences.Editor editor = s.edit();
 
         // Let's do something a preference value changes
-        if (key.equals("english mode")) 
+        if (key.equals("night_mode")) 
         {
             // Create a reference to the checkbox (in this case):
             CheckBoxPreference mHints = (CheckBoxPreference)getPreferenceScreen().findPreference("english mode");
@@ -118,7 +118,7 @@ OnSharedPreferenceChangeListener{
             // Lets store the new preference:
             /*SharedPreferences sharedPreferences = PreferenceManager
             		                .getDefaultSharedPreferences(this);*/
-            		        boolean checkBoxValue = s.getBoolean("english mode", false);
+            		        boolean checkBoxValue = s.getBoolean("night_mode", false);
             		        
             		       if (checkBoxValue) {
             		            //checkBox.setChecked(true);
@@ -126,15 +126,17 @@ OnSharedPreferenceChangeListener{
             		    	   
             		    	   
             		    	   Log.d(TAG, "true onshared" + checkBoxValue);
-            		        } else {
+            		        } 
+            		       else
+            		        {
             		        	Log.d(TAG, "false onshared" + checkBoxValue);
             			            //checkBox.setChecked(false);
             			        }
             
-         editor.putBoolean("english mode", mHints.isChecked());
+         editor.putBoolean("night_mode", mHints.isChecked());
          
          
-        }
+        
         /**
          * You could perform several else if statements, or probably better use a switch block.
          */
@@ -144,7 +146,7 @@ OnSharedPreferenceChangeListener{
         
     }
 
-/*   if (key.equals("english mode")) {
+   if (key.equals("language_key")) {
 
        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
        boolean blnIsReg = Boolean.getBoolean(key);
@@ -165,7 +167,8 @@ OnSharedPreferenceChangeListener{
 
            Toast.makeText(getBaseContext(), "Pop-up Ads Selected",
                    Toast.LENGTH_SHORT).show();
-	}*/
-   
-    
-}
+		}
+	   }
+	    
+    }
+ }

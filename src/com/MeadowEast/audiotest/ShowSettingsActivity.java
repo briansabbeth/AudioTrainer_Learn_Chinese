@@ -29,8 +29,11 @@ public class ShowSettingsActivity extends Activity {
 
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("\n" + sharedPrefs.getBoolean("english mode", true));
-		
+		builder.append("\n" + sharedPrefs.getBoolean("night_mode", true));
+		builder.append("\n" + sharedPrefs.getBoolean("time_usage_key", true));
+		builder.append("\n" + sharedPrefs.getString("language_key", "-1"));
+
+		//builder.append("\n" + sharedPrefs.getBoolean("time_history_key", true));
 
 		TextView settingsTextView = (TextView) findViewById(R.id.settings_text_view);
 		settingsTextView.setText(builder.toString());

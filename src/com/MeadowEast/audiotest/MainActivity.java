@@ -259,19 +259,22 @@ TingshuoHistDatasource hist_datasource;
 	}*/
 	
 	
-public static void readClipInfo() {
+public static  void readClipInfo() {
 
 		hanzi = new HashMap<String, String>();
 		instructions = new HashMap<String, String>();
 
+		//PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        
 		//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-		//boolean pref = sharedPreferences.getBoolean("english mode", false);	
-		boolean pref = false;
+        
+        //String pref = sharedPreferences.getString("updateInterval", "CH");
+			
+		String pref = "CH";
 		
 		Log.d(TAG, "beforeenglish" + pref);
 
-		if (pref == true)
+		if (pref == "EN")
 		{
 
 		file = new File(englishDir, "clipinfo.txt");
@@ -498,26 +501,26 @@ public static void readClipInfo() {
         
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         
-        boolean pref = sharedPreferences.getBoolean("english mode", false);
+        String pref = sharedPreferences.getString("updateInterval", "CH");
 		
         
         englishDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/english/");
         
-        Log.i(LOGTAG,"Startup boolean value" + pref); 
+        Log.i(TAG,"Startup string value " + pref); 
         
         try {
-		if (pref == true)
+		if (pref == "EN")
 		{
 			clipDir = new File(englishDir, "clips");
 			cliplist = clipDir.list();
 			//Toast.makeText(getApplicationContext(),"HELLO FROM PREF! ", Toast.LENGTH_SHORT).show();
-			Log.i(LOGTAG,"Startup boolean value inside true" + pref); 
+			Log.i(LOGTAG,"Startup String value inside EN" + pref); 
 		}
 		else
 		{
 		clipDir = new File(mainDir, "clips");
 		cliplist = clipDir.list();
-		Log.i(LOGTAG,"Startup boolean value inside false" + pref); 
+		Log.i(LOGTAG,"Startup String value inside else " + pref); 
 	
 		}
 		
@@ -716,11 +719,12 @@ public static void readClipInfo() {
     	
        
             databaseSwipeHandler();
+            
             createAndInsertHistModel();
            
             updateSlideHistList();  
            
-          drawerLayout.closeDrawer(drawerListView);
+            drawerLayout.closeDrawer(drawerListView);
  
         }
     }
