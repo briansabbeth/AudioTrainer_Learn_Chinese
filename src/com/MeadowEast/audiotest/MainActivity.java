@@ -1666,7 +1666,9 @@ private HistoryModel createAndInsertHistModel()
 {
 HistoryModel hmodel = new HistoryModel();
 hmodel.set_clip_id(key);
-hmodel.set_short_hanzi("TEST");	///////CHANGE THIS TO WHATEVER VARIABLE YOU WANT
+String temp = hanzi.get(key);
+
+hmodel.set_short_hanzi(temp);	///////CHANGE THIS TO WHATEVER VARIABLE YOU WANT
 ///////CONTAINING HANZI
 hmodel = hist_datasource.createModel(hmodel);
 Log.i(LOGTAG,"BJS CreateAndInsertHist.." + hmodel.get_clip_id() + " " + hmodel.get_short_hanzi());
