@@ -96,7 +96,7 @@ public class MainActivity extends Activity  implements OnClickListener,
 	private GestureLibrary gLibrary;
 	private MediaPlayer mp;
 	public static String[] cliplist;
-	private File sample;
+	public File sample;
 	private static File mainDir;
 	private static File englishDir;
 	public static File clipDir;
@@ -120,6 +120,7 @@ public class MainActivity extends Activity  implements OnClickListener,
 	public LinkedList<String> HistLList;
 	private Handler mHandler;
 	private int delayTime;
+	static Context context;
 	
 	public static final int progress_bar_type = 0;
 	
@@ -177,7 +178,7 @@ TingshuoHistDatasource hist_datasource;
 	    public void run()
 	    {
 	    	boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), 0, 
-	    	        new Intent("com.my.package.MY_UNIQUE_ACTION"), 
+	    	        new Intent("com.MeadowEast.UpdateService.Autostart"), 
 	    	        PendingIntent.FLAG_NO_CREATE) != null);
 
 	    	if (alarmUp)
@@ -195,8 +196,8 @@ TingshuoHistDatasource hist_datasource;
 	    	else if (!alarmUp)
 		    	{
 	    		
-	    		Alarm alarm = new Alarm();
-				alarm.SetAlarm(getBaseContext());
+	    		/*Alarm alarm = new Alarm();
+				alarm.SetAlarm(getBaseContext());*/
 				Log.d(TAG, "Alarm was not active but now is!");
 				//mHandler.postDelayed(mUpdateUI, 86400000);
 				
@@ -264,21 +265,27 @@ public static  void readClipInfo() {
 		hanzi = new HashMap<String, String>();
 		instructions = new HashMap<String, String>();
 
-		//PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		
         
-		//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
         
-        //String pref = sharedPreferences.getString("updateInterval", "CH");
-			
+        
+		 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+	       
+	       String entryvalue = sharedPreferences.getString( "language_key", "");
+	       Log.d(TAG, "Entryvalue " + entryvalue);
+	      
+	      
+		    	
 		String pref = "CH";
 		
-		Log.d(TAG, "beforeenglish" + pref);
+		Log.d(TAG, "beforeenglish" + entryvalue);
 
-		if (pref == "EN")
-		{
+		if (entryvalue.equals("EN"))
+	    {
 
 		file = new File(englishDir, "clipinfo.txt");
-		Log.d(TAG, "beforeenglish");
+		Log.d(TAG, "insideenglish readclipinfo " + entryvalue);
 		try {
 		FileReader fr = new FileReader(file);
 		BufferedReader in = new BufferedReader(fr);
@@ -309,7 +316,7 @@ public static  void readClipInfo() {
 		{
 
 		file = new File(mainDir, "clipinfo.txt");
-		Log.d(TAG, "before");
+		Log.d(TAG, "before else readclipfinfo " + entryvalue);
 
 		try {
 		FileReader fr = new FileReader(file);
@@ -329,7 +336,7 @@ public static  void readClipInfo() {
 		in.close();
 		}
 		catch (Exception e) {
-		Log.d(TAG, "Problem reading clipinfo");
+		Log.d(TAG, "before else readclipfinfo " + entryvalue);
 		}
 
 		Log.d(TAG, "after");
@@ -423,7 +430,7 @@ public static  void readClipInfo() {
 		    
 		
 	
-		
+		context = this;
 		
 //////////////////////////////////Custom Gesutre Overlay//////////////////////////////////        
         
@@ -448,6 +455,9 @@ public static  void readClipInfo() {
             
             //mHandler.post(mUpdateUI);
     		//start();
+            
+            Alarm alarm = new Alarm();
+			alarm.SetAlarm(getBaseContext());
     		mgr = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
     		
     		registerReceiver(DownloadService.onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
@@ -632,7 +642,7 @@ public static  void readClipInfo() {
        
        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-	/*Log.i(LOGTAG,"Before Alarm"); 
+       /*Log.i(LOGTAG,"Before Alarm"); 
         	
 		
 	  	Intent i = new Intent(this, CheckUpdate.class);
@@ -667,25 +677,17 @@ public static  void readClipInfo() {
         	
         	key = clipsID;
 
-             
-        	int newclipNum = 0;
-
-        	try 
-        	{
-        		newclipNum = Integer.parseInt(key);
-        	} 
-        	catch(NumberFormatException e) 
-        	{
-        		Log.d(TAG, "Could not parse" + e);
-        	} 
-        	index_getClip = newclipNum;
-        	
-        	sample = new File(clipDir, cliplist[index_getClip]);
-                
-              
-        	
+        	Log.d(TAG, "key is " + key);
+    
+            String mp3file = key + ".mp3";
+        
             try
             {
+            	sample = new File(clipDir, mp3file);
+            	
+            	Log.d(TAG, "Sample After " + sample);
+            	
+            	
         	if (!clockRunning)
     			toggleClock();
     		
@@ -776,10 +778,11 @@ public static  void readClipInfo() {
 	public boolean onLongClick(View v)
 	{
 		repeatHandler(key);
+		
 		switch (v.getId()) 
 		{
 		case R.id.hanziTextView:
-			Toast.makeText(this, "Clip: " + key, Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Clip: " + key, Toast.LENGTH_SHORT).show();
 			Log.d(TAG, "Long clicked");
 			break;
 		}
@@ -1023,7 +1026,7 @@ private Intent getDefaultShareIntent()
 
 
 
-private boolean isNetworkAvailable() 
+public boolean isNetworkAvailable() 
 	{
 	    ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -1221,41 +1224,54 @@ public void onSwipeRight() {
 public void onSwipeLeft() {
 	lastTurn = 'S';
 	Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show();
+	
 	Log.i(TAG, "BJS onSwipeLeft() " + lastTurn);
+	
+	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+
+	 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+      
+     String entryvalue = sharedPreferences.getString( "language_key", "");
+     Log.d(TAG, "Entryvalue " + entryvalue);
+     
+     
+	    	
+	
+	
 	
 	
 	try{
 
-	//PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-    
-	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-	boolean pref = sharedPreferences.getBoolean("english mode", false);
-	Log.e(TAG, "pref boolean value is "  + pref);
+	
+	Log.d(TAG, "Inside Play before English" + entryvalue);
+	
+
 	File sdCard = Environment.getExternalStorageDirectory();
 	mainDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/"); 
 	englishDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/english/");
 	
-	if (pref == true)
-		{
+	if (entryvalue.equals("EN"))
+	   {
 			clipDir = new File(englishDir, "clips");
 			cliplist = clipDir.list();
-			Log.e(TAG, "inside True ON Play "  + pref);
-			//Toast.makeText(getApplicationContext(),"inside True ON Play", Toast.LENGTH_SHORT).show();
+			Log.d(TAG, "Inside EN " + entryvalue);
+		
 		}
 	else
 		{
 			clipDir = new File(mainDir, "clips");
 			cliplist = clipDir.list();
-			Log.e(TAG, "inside False ON Play "  + pref);
-			//Toast.makeText(getApplicationContext(),"inside False ON Play ", Toast.LENGTH_SHORT).show();
+			Log.d(TAG, "Inside ELSE CH " + entryvalue);
+			
 			
 		}
 	
+	readClipInfo();
 	 datasource = new TingshuoDatasource(this);
      datasource.open();
  	  
 
-	readClipInfo();
+	
 	
 	String test = Integer.toString(cliplist.length);
 	
@@ -1277,18 +1293,22 @@ public void onSwipeLeft() {
 	// key = key.substring(0, key.length() - 4);
 	String test_clip = getClip();
 	Log.e(TAG, "BJS onSwipeLeft().testClip() " + test_clip);
+	
 	key = test_clip;
-
-         
+	String mp3file = key + ".mp3";
+    
+    Log.e(TAG, "BJS onSwipeLeft().testClip() " + test_clip);    
+    
      databaseSwipeHandler();
      createAndInsertHistModel();
     
      updateSlideHistList();
         
-      sample = new File(clipDir, cliplist[index_getClip]);
-      Log.e(TAG, "BJS This is index_getclip inside of play " + index_getClip);
+      sample = new File(clipDir, mp3file);
+      
+      Log.e(TAG, "BJS This is index_getclip inside of play " + mp3file);
       Log.e(TAG, "BJS This is key inside of play " + key);
-      Log.e(TAG, "BJS This is key inside of play " + sample);
+      Log.e(TAG, "BJS This is sample inside of play " + sample);
          
         
       turnCount++;
@@ -1539,7 +1559,7 @@ private String getClip()
  
   rnd = new Random();
   int index = rnd.nextInt(probabilityArray.size());
-  index_getClip = index;
+  //index_getClip = index;
   return probabilityArray.get(index);
 
 }
