@@ -6,45 +6,32 @@ import com.MeadowEast.UpdateService.CheckUpdate;
 import com.MeadowEast.UpdateService.DownloadService;
 import com.MeadowEast.UpdateService.UnZip;
 
-import com.MeadowEast.UpdateService.UnZipUtil;
 import com.MeadowEast.dbOpenHelper.TingshuoDatasource;
 import com.MeadowEast.dbOpenHelper.TingshuoHistDatasource;
 import com.MeadowEast.model.HistoryModel;
 import com.MeadowEast.model.Model;
 import android.view.GestureDetector.OnGestureListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -57,13 +44,9 @@ import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.SystemClock;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -78,7 +61,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
@@ -175,7 +157,8 @@ TingshuoHistDatasource hist_datasource;
 	
 	private final Runnable mUpdateUI = new Runnable() 
 	{
-	    public void run()
+	    @Override
+		public void run()
 	    {
 	    	boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), 0, 
 	    	        new Intent("com.MeadowEast.UpdateService.Autostart"), 
@@ -259,59 +242,70 @@ TingshuoHistDatasource hist_datasource;
 	    mHandler.postDelayed(mUpdateUi, delayTime);
 	}*/
 	
+
 	
 public static  void readClipInfo() {
 
 		hanzi = new HashMap<String, String>();
+		
 		instructions = new HashMap<String, String>();
-
-		
-        
+  
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
-        
-        
-		 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+              
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
 	       
-	       String entryvalue = sharedPreferences.getString( "language_key", "");
-	       Log.d(TAG, "Entryvalue " + entryvalue);
+	    String entryvalue = sharedPreferences.getString( "language_key", "");
+	    Log.d(TAG, "Entryvalue " + entryvalue);
 	      
 	      
-		    	
-		String pref = "CH";
-		
 		Log.d(TAG, "beforeenglish" + entryvalue);
+		
+		File sdCard = Environment.getExternalStorageDirectory();
+		mainDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/"); 
+		
+		englishDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/english/");
 
 		if (entryvalue.equals("EN"))
 	    {
 
 		file = new File(englishDir, "clipinfo.txt");
-		Log.d(TAG, "insideenglish readclipinfo " + entryvalue);
-		try {
+		
+		Log.d(TAG, "inside english readclipinfo " + entryvalue);
+		
+		try 
+		{
 		FileReader fr = new FileReader(file);
 		BufferedReader in = new BufferedReader(fr);
 		String line;
-		while ((line = in.readLine()) != null) {
-		String fixedline = new String(line.getBytes());
-		String[] fields = fixedline.split("\\t");
-		if (fields.length == 3) {
-		hanzi.put(fields[0], fields[1]);
-		Log.e(TAG, "BJS HANZI FIELD " + fields[1] + " " + fields[0] );
-
-		instructions.put(fields[0], fields[2]);
-		} else {
-		Log.d(TAG, "Bad line: " + fields.length + " elements");
-		Log.d(TAG, fixedline);
+			while ((line = in.readLine()) != null)
+			{
+				String fixedline = new String(line.getBytes(), "utf-8");
+				String[] fields = fixedline.split("\\t");
+				if (fields.length == 3)
+					{
+					hanzi.put(fields[0], fields[1]);
+					Log.e(TAG, "BJS HANZI FIELD " + fields[1] + " " + fields[0] );
+			
+					instructions.put(fields[0], fields[2]);
+					} 
+				else 
+					{
+					Log.d(TAG, "Bad line: " + fields.length + " elements");
+					Log.d(TAG, fixedline);
+					}
+			}
+			
+			in.close();
+			
+		} 
+		catch (Exception e) 
+		{
+		Log.d(TAG, "Problem reading english clipinfo");
 		}
-		}
-		in.close();
-		} catch (Exception e) {
-		Log.d(TAG, "Problem reading clipinfo");
-		}
+		
 		Log.d(TAG, "afterenglish");
 
 		}
-
-
 		else
 		{
 
@@ -399,6 +393,7 @@ public static  void readClipInfo() {
 
 	private void createUpdateTimeTask() {
 		updateTimeTask = new Runnable() {
+			@Override
 			public void run() {
 				Long totalMillis = elapsedMillis + System.currentTimeMillis()
 						- start;
@@ -456,8 +451,7 @@ public static  void readClipInfo() {
             //mHandler.post(mUpdateUI);
     		//start();
             
-            Alarm alarm = new Alarm();
-			alarm.SetAlarm(getBaseContext());
+			
     		mgr = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
     		
     		registerReceiver(DownloadService.onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
@@ -503,7 +497,22 @@ public static  void readClipInfo() {
 		File f = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/");
 		f.mkdirs();
 		
+		
+		boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), 0, new Intent("com.MeadowEast.UpdateService.Alarm"),  PendingIntent.FLAG_NO_CREATE) != null);
+		
+		Log.d(TAG, "Alarm is already active" + alarmUp );
+		
+		if (alarmUp)
+    	{
+
+            Alarm alarm = new Alarm();
+			alarm.SetAlarm(getBaseContext());
+    		Log.d(TAG, "Alarm is already active");
+    	}
+		else
+		{
 		initializationcheck();
+		}
 		
 		mainDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/");
 		
@@ -731,6 +740,7 @@ public static  void readClipInfo() {
         }
     }
 	
+	@Override
 	public void onPause()
 	{
 		
@@ -744,6 +754,7 @@ public static  void readClipInfo() {
 		super.onPause();
 	}
 
+	@Override
 	public void onSaveInstanceState(Bundle outState) 
 	{
 		super.onSaveInstanceState(outState);
@@ -775,6 +786,7 @@ public static  void readClipInfo() {
 		t.setText("");
 	}
 
+	@Override
 	public boolean onLongClick(View v)
 	{
 		repeatHandler(key);
@@ -789,6 +801,7 @@ public static  void readClipInfo() {
 		return true;
 	}
 
+	@Override
 	public void onClick(View v) 
 	{
 		switch (v.getId()) 
@@ -801,6 +814,7 @@ public static  void readClipInfo() {
 					.setMessage(R.string.reallyReset)
 					.setPositiveButton(R.string.yes,
 							new DialogInterface.OnClickListener() {
+								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
 									MainActivity.this.reset();
@@ -823,6 +837,7 @@ public static  void readClipInfo() {
 					.setMessage(R.string.reallyQuit)
 					.setPositiveButton(R.string.yes,
 							new DialogInterface.OnClickListener() {
+								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
 									MainActivity.this.finish();
@@ -921,6 +936,7 @@ public boolean onOptionsItemSelected(MenuItem item)
 ////    ////    ////    ////    ////    ////    ////    ////
 	///    ////    ////    ////    ////    ////    ////
 ////   ////   ////    ////    ////    ////    ////    ////
+@Override
 public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
         ArrayList<Prediction> predictions = gLibrary.recognize(gesture);
         //&& predictions.get(0).score > 1.0
@@ -1173,6 +1189,7 @@ protected void onDestroy()
 */
 
 
+@Override
 public boolean onDown(MotionEvent arg0) {
 	Log.i(LOGTAG, "BJS on down ");
 	//Toast.makeText(getApplicationContext(), "Single Tap Gesture", 100).show();
@@ -1182,6 +1199,7 @@ public boolean onDown(MotionEvent arg0) {
 private static final int SWIPE_THRESHOLD = 100;
 private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
+@Override
 public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 	///Log.i(LOGTAG, "BJS onFling");
 
@@ -1267,8 +1285,8 @@ public void onSwipeLeft() {
 		}
 	
 	readClipInfo();
-	 datasource = new TingshuoDatasource(this);
-     datasource.open();
+	 /*datasource = new TingshuoDatasource(this);
+     datasource.open();*/
  	  
 
 	
@@ -1279,11 +1297,11 @@ public void onSwipeLeft() {
     modelList = datasource.findAll();
     Log.i(LOGTAG,"BJS Outputting the modellist"); 
     outputModelList(modelList);	
-	String test = Integer.toString(cliplist.length);
+	String test = Integer.toString(cliplist.length);*/
 	
 	Log.e(TAG, test);
 	//try {
-*/		
+		
 	
 	Log.e(TAG, test);
 
@@ -1315,7 +1333,7 @@ public void onSwipeLeft() {
 		//Log.e(TAG, "BJS onSwipeLeft().turnCount = " + turnCount);
 		//Log.i(TAG, "BJS onSwipeLeft().key - 4 " + key);
 		
-	TextView t = (TextView) findViewById(R.id.instructionTextView);
+      	TextView t = (TextView) findViewById(R.id.instructionTextView);
 		t.setText(getInstruction(key));
 		Log.e(TAG, "BJS TEXTVIEW " + t);
 		
@@ -1362,6 +1380,7 @@ public void onSwipeBottom() {
 	//Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show();
 	toggleClock();
 }
+@Override
 public void onLongPress(MotionEvent arg0) {
 	// TODO Auto-generated method stub
 	
@@ -1374,12 +1393,14 @@ public boolean dispatchTouchEvent(MotionEvent e)
     return super.dispatchTouchEvent(e);
 }
 
+@Override
 public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
 		float arg3) {
 	// TODO Auto-generated method stub
 	return false;
 }
 
+@Override
 public void onShowPress(MotionEvent arg0) {
 	// TODO Auto-generated method stub
 	Log.i(LOGTAG, "testsing4");
@@ -1392,6 +1413,7 @@ public boolean onTouchEvent(MotionEvent event) {
     return detector.onTouchEvent(event);
 }
 
+@Override
 public boolean onSingleTapUp(MotionEvent e) {
 	
 	//Toast.makeText(this, "ShowHanziTap", Toast.LENGTH_SHORT).show();
