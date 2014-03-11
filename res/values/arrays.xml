@@ -2,16 +2,16 @@
 
 <resources>
 
-		<string-array name="updateInterval">
+		<string-array name="Languages">
 			<item name="EN">English</item>
 			<item name="CH">Chinese</item>
 			<item name="SP">Spanish</item>
 		</string-array>
 		
-		<string-array name="updateIntervalValues">
-			<item name="EN">TRUE</item>
-			<item name="CH">FALSE</item>
-			<item name="SP">FALSE</item>
+		<string-array name="LanguageValues">
+			<item name="EN">EN</item>
+			<item name="CH">CH</item>
+			<item name="SP">SP</item>
 		</string-array>
 
 </resources>

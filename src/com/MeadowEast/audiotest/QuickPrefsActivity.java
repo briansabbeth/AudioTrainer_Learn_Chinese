@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
@@ -66,7 +67,7 @@ OnSharedPreferenceChangeListener{
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	menu.add(Menu.NONE, 0, 0, "Show current settings");
+    	//menu.add(Menu.NONE, 0, 0, "Show current settings");
     	return super.onCreateOptionsMenu(menu);
     }
 
@@ -146,28 +147,31 @@ OnSharedPreferenceChangeListener{
         
     }
 
-   if (key.equals("language_key")) {
+        if (key.equals("language_key")) {
 
        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-       boolean blnIsReg = Boolean.getBoolean(key);
-	    
-	    if (blnIsReg == true)
+       //ListPreference listPref = (ListPreference) sharedPreferences; 
+       String entryvalue = sharedPreferences.getString( "language_key", "");
+       Log.d(TAG, "Entryvalue " + entryvalue);
+      
+      
+	    if (entryvalue.equals("EN"))
 	    {
-	    	Log.d(TAG, "true onshared" + blnIsReg);
-	    	Toast.makeText(getBaseContext(), "true", Toast.LENGTH_SHORT).show();
+	    	Log.d(TAG, "EN " + entryvalue);
+	    	Toast.makeText(getBaseContext(), "English Selected", Toast.LENGTH_SHORT).show();
+	    }
+	    else if (entryvalue.equals("CH"))
+	    {
+	    	Log.d(TAG, "CH " + entryvalue);
+	    	Toast.makeText(getBaseContext(), "Chinese Selected", Toast.LENGTH_SHORT).show();
 	    }
 	    else
 	    {
-	    	Log.d(TAG, "false onshared" + blnIsReg);
-	    	Toast.makeText(getBaseContext(), "false", Toast.LENGTH_SHORT).show();
-	    	}
+	    	Toast.makeText(getBaseContext(), "You may not go where no1 has gone before, pick again!", Toast.LENGTH_SHORT).show();
+	    }
+	    
        
-       String value = sharedPreferences.getString("english mode", "");
-       if (value != null && value.equals("Pop-up Ads")) {
-
-           Toast.makeText(getBaseContext(), "Pop-up Ads Selected",
-                   Toast.LENGTH_SHORT).show();
-		}
+     
 	   }
 	    
     }
