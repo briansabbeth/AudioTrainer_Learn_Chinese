@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -44,7 +46,21 @@ public class Alarm extends BroadcastReceiver
      AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
      Intent i = new Intent(context, Alarm.class);
      PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
+     if (!isNetworkAvailable(context))
+ 	{
+      am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 60 * 4, pi); // Millisec * Second * Minute * Hours
+      Log.d(TAG, "Alarm set for 4 hours, no internet!");
+ 	
+ 	}
+     else
+     {
      am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 60 * 24, pi); // Millisec * Second * Minute * Hours
+     Log.d(TAG, "Alarm set for 24 hours!");
+     
+     }
+     
+ 
+ 
  }
 
  public void CancelAlarm(Context context)
@@ -54,4 +70,11 @@ public class Alarm extends BroadcastReceiver
      AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
      alarmManager.cancel(sender);
  }
+ public boolean isNetworkAvailable(Context context) 
+	{
+	    ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
+ 
 }
