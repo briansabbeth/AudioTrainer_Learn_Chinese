@@ -22,9 +22,13 @@
             android:entryValues="@array/LanguageValues"   /> 
             
         <EditTextPreference
-	        android:key="time_usage_key"
-	        android:title="7 Day Usage"
-	        android:summary="A total of usage of 7 days." />
+			android:key="time_usage_key"
+			android:title="7 Day Usage"
+			android:summary="A total of usage of 7 days." />
+        
+          
+            
+     
 
 	</PreferenceCategory>
 	

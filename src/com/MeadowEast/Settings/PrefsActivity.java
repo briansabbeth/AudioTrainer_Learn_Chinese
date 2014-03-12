@@ -1,4 +1,4 @@
-package com.MeadowEast.audiotest;
+package com.MeadowEast.Settings;
 
 
 import com.MeadowEast.R;
@@ -15,20 +15,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class QuickPrefsActivity extends PreferenceActivity implements
+public class PrefsActivity extends PreferenceActivity implements
 OnSharedPreferenceChangeListener{
 	CheckBoxPreference isReg;
-	static final String TAG = "QuickPrefsActivity";
+	static final String TAG = "PrefsActivity";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);        
         addPreferencesFromResource(R.xml.preferences); 
         
-        PreferenceManager.setDefaultValues(this,R.xml.preferences, false);
-        
-        
-       			
+     
+      			
     }
     
     @Override
@@ -41,7 +39,7 @@ OnSharedPreferenceChangeListener{
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case 0:
-    			startActivity(new Intent(this, ShowSettingsActivity.class));
+    			startActivity(new Intent(this, SettingsActivity.class));
     			return true;
     	}
     	return false;
@@ -49,7 +47,7 @@ OnSharedPreferenceChangeListener{
     @Override
     public void onStart(){
         super.onStart();
-        SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(QuickPrefsActivity.this);
+        SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(PrefsActivity.this);
     }
     
     @Override

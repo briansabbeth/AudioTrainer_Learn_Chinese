@@ -1,9 +1,15 @@
 package com.MeadowEast.audiotest;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +43,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.preference.CheckBoxPreference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -58,9 +63,9 @@ import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.MeadowEast.Settings.PrefsActivity;
+import com.MeadowEast.Settings.StatsActivity;
 import com.MeadowEast.UpdateService.Alarm;
-import com.MeadowEast.UpdateService.AlarmService;
 import com.MeadowEast.UpdateService.CheckUpdate;
 import com.MeadowEast.UpdateService.DownloadService;
 import com.MeadowEast.UpdateService.UnZip;
@@ -75,7 +80,7 @@ import com.MeadowEast.model.Model;
 public class MainActivity extends Activity  implements OnClickListener,
 		OnLongClickListener, OnGesturePerformedListener,  OnGestureListener  {
 
- 
+	public static long NSJtotalTime;
     private int turnCount;
 	public static ProgressDialog mProgressDialog;
 	private GestureLibrary gLibrary;
@@ -350,6 +355,8 @@ public static  void readClipInfo() {
 	
 	
 }
+
+
 	private String getInstruction(String key) {
 		Log.i(LOGTAG, "BJS getInstructions(key), key =  "+  key);
 		String instructionCodes = instructions.get(key);
@@ -381,6 +388,7 @@ public static  void readClipInfo() {
 	private void toggleClock() {
 		if (clockRunning) {
 			elapsedMillis += System.currentTimeMillis() - start;
+			calcTime();
 			setHanzi("");
 		} else
 			start = System.currentTimeMillis();
@@ -390,6 +398,393 @@ public static  void readClipInfo() {
 			clockHandler.postDelayed(updateTimeTask, 200);
 	}
 
+	private void calcTime(){
+		//Holds value for total weekly time
+		ArrayList<Long> weekly = new ArrayList();
+		//hold values for integers from file
+		ArrayList<String> a = new ArrayList();
+		File sdCard = Environment.getExternalStorageDirectory();
+		File f = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/values.txt");
+		File sdCard2 = Environment.getExternalStorageDirectory();
+		File g = new File(sdCard2.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/array.txt");
+		//get values
+		try {
+			FileInputStream fis;
+			fis = new FileInputStream(f);
+			//Construct BufferedReader from InputStreamReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+			String line = null;
+			try {
+				while ((line = br.readLine()) != null) {
+					a.add(line);
+					//System.out.println(line);
+				}
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				//f.delete();
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}	
+		int index = Integer.parseInt(a.get(0));
+		int pDay = Integer.parseInt(a.get(1));
+		int pHour = Integer.parseInt(a.get(2));
+		int pMinute = Integer.parseInt(a.get(3));
+		//System.out.println("Index: " + index);
+		//System.out.println("pDay: " + pDay);
+		//System.out.println("pHour: " + pHour);
+		//System.out.println("pMinute: " + pMinute);
+		int temp3 = index;
+		//hold previous values
+		ArrayList<String> a2 = new ArrayList();
+		//get previous values from text file
+		try {
+			FileInputStream fis2;
+			fis2 = new FileInputStream(g);
+			//Construct BufferedReader from InputStreamReader
+			BufferedReader br2 = new BufferedReader(new InputStreamReader(fis2));
+			String line = null;
+			try {
+				while (((line = br2.readLine()) != null) && (temp3 != 0)) {
+					a2.add(line);
+					temp3 = temp3 - 1;
+					//System.out.println(line);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	 
+		try {
+			//f.delete();
+			br2.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		//System.out.println("LOOOOOOOOOOOOOOOK");
+		for(int i = 0; i<index; ++i){
+			weekly.add((long)Integer.parseInt(a2.get(i)));
+		}
+		Calendar currentDate = Calendar.getInstance();
+		int cDay = currentDate.get(Calendar.DAY_OF_WEEK);
+		int cHour = currentDate.get(Calendar.HOUR_OF_DAY);
+		int cMinute = currentDate.get(Calendar.MINUTE);
+		
+		System.out.println("cDay: " + cDay);
+		System.out.println("cHour: " + cHour);
+		System.out.println("cMinute: " + cMinute);
+		
+		//Same Day
+		long totalTime = 0;
+		for(int i = 0; i < index; ++i){
+			totalTime = totalTime + weekly.get(i);
+		}
+		long currentTime = elapsedMillis - totalTime;
+		System.out.println(currentTime);
+		if (cDay == pDay){
+			//same hour
+			if (cHour == pHour){
+				//same minute
+				if (cMinute == pMinute){
+					//System.out.println("here1");
+					//add timeElapsed to array
+					//System.out.println("Time elapsed: " + elapsedMillis);
+					weekly.add((int) index, currentTime);
+					//This function will make sure each 
+					//index does not have more than 60 seconds
+					//temporary index value
+					int i = (int) index;
+					//if value in index is over 1000ms (60s)
+					while (weekly.get(i) > 1000){
+					//subtract 1000ms from index
+					int temp = (int) (weekly.get(i) - 1000);
+					//save 1000ms in index
+					weekly.add(i, (long) 1000);
+					//increment index
+					i = i + 1;
+					//save rest of time to next index and repeat
+					weekly.add(i, (long) temp);
+					//System.out.println(weekly.get(i));
+				}
+				for (int x = 0; x <= i; ++x) {
+					System.out.println(weekly.get(x));
+				}
+				//update value for index
+				//System.out.println("here2");
+				//System.out.println(weekly.get((int) index));
+				//System.out.println("here3");
+				//System.out.println("here4");
+				index = i;
+				++index;
+			}
+		}
+	}
+	
+	//Same Day
+	if (cDay == pDay){
+		//same hour
+		if (cHour == pHour){
+			//DIFFERENT minute
+			if (cMinute != pMinute){
+				//calcualte the difference 
+				//System.out.println("here5");
+				int difference = (cMinute - pMinute);
+				//System.out.println("here6");
+				int tempIndex = 0;
+				//System.out.println("here7");
+				//find value of latest index
+				tempIndex = (int) (index + difference);
+				//System.out.println("here8");
+				//if value of one week is exceeded start removing from top
+				if (tempIndex > 10079){
+					//System.out.println("here9");
+					tempIndex = tempIndex - 1;
+					//System.out.println("here9.5");
+					weekly.remove(0);
+				}
+				//System.out.println("here10");
+				//fill in value of 0 for indexes where no time is used
+				for (int i = (int) (index /*+ 1*/); i < tempIndex; ++i){
+					//System.out.println("here11");
+					weekly.add(i, (long) 0);
+				}
+				//System.out.println("here12");
+				//update index with latest value
+				index = tempIndex;
+				//System.out.println("here13");
+				weekly.add((int) index, currentTime);
+				System.out.println("here14");
+				//Log.i(LOGTAG, "Variable updated" + weekly.get((int) index));
+				//System.out.
+				//System.out.println("here15");
+				int i = (int) index;
+				while (weekly.get(i) > 1000){
+					int temp = (int) (weekly.get(i) - 1000);
+					weekly.add(i, (long) 1000);
+					i = i + 1;
+					weekly.add(i, (long) temp);
+					//System.out.println(weekly.get(i));
+				}
+				for (int x = 0; x <= i; ++x) {
+					//System.out.println(weekly.get(x));
+				}
+				//System.out.println("here16");
+				index = i;
+				++index;
+			}
+		}
+	}
+	//Log.i(LOGTAG, "Variable updated" + weekly.get((int) index));
+	
+	//Same Day
+	if (cDay == pDay){
+		//different hour
+		if (cHour != pHour){
+			int difference = cHour - pHour;
+			//convert hour to minutes
+			difference = difference * 60;
+			//SAME Minute
+			if (cMinute == pMinute){
+				int tempIndex = 0;
+				tempIndex = (int) (index + difference);
+				if (tempIndex > 10079){
+					tempIndex = tempIndex - 1;
+					weekly.remove(0);
+				}
+				for (int i = (int) (index + 1); i < tempIndex; ++i){
+					weekly.add(i, (long) 0);
+				}
+				index = tempIndex;
+				weekly.add((int) index, currentTime);
+				int i = (int) index;
+				while (weekly.get(i) > 1000){
+					int temp = (int) (weekly.get(i) - 1000);
+					weekly.add(i, (long) 1000);
+					i = i + 1;
+					weekly.add(i, (long) temp);
+				}
+				index = i;
+				++index;
+			}
+			//DIFFERENT Minute
+			if (cMinute != pMinute){
+				int tempIndex = 0;
+				difference = difference + (cMinute - pMinute);
+				tempIndex = (int) (index + difference);
+				if (tempIndex > 10079){
+					tempIndex = tempIndex -1;
+					weekly.remove(0);
+				}
+				for (int i = (int) (index + 1); i < tempIndex; ++i){
+					weekly.add(i, (long) 0);
+				}
+				index = tempIndex;
+				weekly.add((int) index, currentTime);
+				int i = (int) index;
+				while (weekly.get(i) > 1000){
+					int temp = (int) (weekly.get(i) - 1000);
+					weekly.add(i, (long) 1000);
+					i = i + 1;
+					weekly.add(i, (long) temp);
+				}
+				index = i;
+				++index;
+			}
+		}
+	}
+	
+	//Different Day 
+	if (cDay != pDay){
+		//convert days to hours to minutes
+		int difference = (cDay - pDay) * 24 * 60;
+		//Same hour
+		if (cHour == pHour){
+			//same minute
+			if (cMinute == pMinute){
+				int tempIndex = 0;
+				tempIndex = (int) (index + difference);
+				if (tempIndex > 10079){
+					tempIndex = tempIndex - 1;
+					weekly.remove(0);
+				}
+				for (int i = (int) (index + 1); i < tempIndex; ++i){
+					weekly.add(i, (long) 0);
+				}
+				index = tempIndex;
+				weekly.add((int) index, currentTime);
+				int i = (int) index;
+				while (weekly.get(i) > 1000){
+					int temp = (int) (weekly.get(i) - 1000);
+					weekly.add(i, (long) 1000);
+					i = i + 1;
+					weekly.add(i, (long) temp);
+				}
+				index = i;
+				++index;
+			}
+			//different minute
+			if (cMinute != pMinute){
+				int tempIndex = 0;
+				difference = difference + (cMinute - pMinute);
+				tempIndex = (int) (index + difference);
+				if (tempIndex > 10079){
+					tempIndex = tempIndex - 1;
+					weekly.remove(0);
+				}
+				for (int i = (int) (index + 1); i < tempIndex; ++i){
+					weekly.add(i, (long) 0);
+				}
+				index = tempIndex;
+				weekly.add((int) index, currentTime);
+				int i = (int) index;
+				while (weekly.get(i) > 1000){
+					int temp = (int) (weekly.get(i) - 1000);
+					weekly.add(i, (long) 1000);
+					i = i + 1;
+					weekly.add(i, (long) temp);
+				}
+				index = i;
+				++index;
+			}
+		}
+		//different hour
+		if (cHour != pHour){
+			difference = difference + ((cHour - pHour) * 60);
+			//same minute
+			if (cMinute == pMinute){
+				int tempIndex = 0;
+				tempIndex = (int) (index + difference);
+				if (tempIndex > 10079){
+					tempIndex = tempIndex - 1;
+					weekly.remove(0);
+				}
+				for (int i = (int) (index + 1); i < tempIndex; ++i){
+					weekly.add(i, (long) 0);
+				}
+				index = tempIndex;
+				weekly.add((int) index, currentTime);
+				int i = (int) index;
+				while (weekly.get(i) > 1000){
+					int temp = (int) (weekly.get(i) - 1000);
+					weekly.add(i, (long) 1000);
+					i = i + 1;
+					weekly.add(i, (long) temp);
+				}
+				index = i;
+				++index;
+			}
+			//different minute
+			if (cMinute != pMinute){
+				int tempIndex = 0;
+				difference = difference + (cMinute - pMinute);
+				tempIndex = (int) (index + difference);
+				if (tempIndex > 10079){
+					tempIndex = tempIndex - 1;
+					weekly.remove(0);
+				}
+				for (int i = (int) (index + 1); i < tempIndex; ++i){
+					weekly.add(i, (long) 0);
+				}
+				index = tempIndex;
+				weekly.add((int) index, currentTime);
+				int i = (int) index;
+				while (weekly.get(i) > 1000){
+					int temp = (int) (weekly.get(i) - 1000);
+					weekly.add(i, (long) 1000);
+					i = i + 1;
+					weekly.add(i, (long) temp);
+				}
+				index = i;
+				++index;
+			}
+		}
+	}
+	NSJtotalTime = 0;
+	for (int i = 0; i < index; ++i){
+		NSJtotalTime = NSJtotalTime + weekly.get(i);
+	}
+	System.out.println("The total time is: " + NSJtotalTime);
+	//save back to file
+	try {
+		FileWriter fw = new FileWriter(f);
+		PrintWriter pw = new PrintWriter(fw);
+		pw.println(index);
+		pw.println(cDay);
+		pw.println(cHour);
+		pw.println(cMinute);
+		pw.close();
+		//Log.d(TAG, "calcTime succesful!");
+	} catch (IOException e) {
+		Log.d(TAG, "calcTime Error!");
+	}
+	//save back to file
+	try {
+		g.delete();
+		FileWriter fw2 = new FileWriter(g);
+		PrintWriter pw2 = new PrintWriter(fw2);
+		for(int i = 0; i<index; ++i){
+			pw2.println(weekly.get(i));
+			//Log.d(TAG, "calcTime succesful!");
+		}
+		pw2.close();
+		//Log.d(TAG, "calcTime Succesful!");
+	} catch (IOException e) {
+		Log.d(TAG, "calcTime Error!");
+	}
+	}
 	private void showTime(Long totalMillis) {
 		int seconds = (int) (totalMillis / 1000);
 		int minutes = seconds / 60;
@@ -882,7 +1277,7 @@ public boolean onOptionsItemSelected(MenuItem item)
 		switch (item.getItemId()) 
 		{
 		case R.id.action_settings:
-			startActivity(new Intent(this, QuickPrefsActivity.class));
+			startActivity(new Intent(this, PrefsActivity.class));
 			
 			return true;
 		case R.id.action_check_updates:
@@ -912,7 +1307,7 @@ public boolean onOptionsItemSelected(MenuItem item)
 			startActivity(new Intent(this, DisplayDict.class));
 			return true;
 		case R.id.action_stats:	
-			startActivity(new Intent(this, Stats.class));
+			startActivity(new Intent(this, StatsActivity.class));
 		case R.id.share:
 			getDefaultShareIntent();
 		
@@ -1122,8 +1517,7 @@ void initializationcheck()
 	 
 	String englishclipsPath = Environment.getExternalStorageDirectory() + "/Android/data/com.MeadowEast.audiotest/files/english/";
 	String englishzipPath = Environment.getExternalStorageDirectory() + "/Android/data/com.MeadowEast.audiotest/files/english.zip";
-	
-	
+		
 	String clipsPath = Environment.getExternalStorageDirectory() + "/Android/data/com.MeadowEast.audiotest/files/clips/";
 	String clipszipPath = Environment.getExternalStorageDirectory() + "/Android/data/com.MeadowEast.audiotest/files/clips.zip";
 	
@@ -1131,12 +1525,9 @@ void initializationcheck()
 	File clipDir = new File(clipsPath);
 	
 	File englishfilezip = new File(englishzipPath);
-	
-	
+		
 	File clipszip = new File(clipszipPath);
-	
-	
-	
+		
 	try 
 	{
 	
@@ -1572,7 +1963,7 @@ private void initializeAvailableClips()
 
 if (entryvalue.equals("EN"))
 		{
-	Log.i(LOGTAG, "BJS InINITIALIZE");
+	Log.i(LOGTAG, "BJS ENGLISH InINITIALIZE");
 
 	englishavailableClips.clear();
 	ENGLISH_CLIP_ARRAY.clear();
