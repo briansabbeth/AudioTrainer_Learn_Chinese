@@ -39,7 +39,10 @@
     	     android:name=".audiotest.QuickPrefsActivity" 
     	     android:label="@string/app_name" >
         </activity>
-
+		<activity 
+    	     android:name=".audiotest.Stats" 
+    	     android:label="@string/app_name" >
+        </activity>
     	
     	<receiver 
 				android:process=":remote" 

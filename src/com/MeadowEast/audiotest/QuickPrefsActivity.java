@@ -19,50 +19,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class QuickPrefsActivity extends PreferenceActivity implements
 OnSharedPreferenceChangeListener{
 	CheckBoxPreference isReg;
-	static final String TAG = "CAT";
+	static final String TAG = "QuickPrefsActivity";
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);        
         addPreferencesFromResource(R.xml.preferences); 
         
         PreferenceManager.setDefaultValues(this,R.xml.preferences, false);
-        CheckBoxPreference  pref = (CheckBoxPreference) findPreference("night_mode");        
-       
-/*        pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-        	 
-        	public boolean onPreferenceClick(Preference preference, Object newValue) {
-
-        	    Toast.makeText(getBaseContext(), "Some text", Toast.LENGTH_SHORT).show();
-        	    boolean blnIsReg = Boolean.getBoolean(newValue.toString());
-        	    
-        	    if (blnIsReg == true)
-        	    {
-        	    	Toast.makeText(getBaseContext(), "true", Toast.LENGTH_SHORT).show();
-        	    }
-        	    else
-        	    {
-        	    	Toast.makeText(getBaseContext(), "false", Toast.LENGTH_SHORT).show();
-        	    	}
-        	    
-        	    
-        	    
-        	    return true; 
-        	}
-
-			public boolean onPreferenceClick(Preference preference) {
-				// TODO Auto-generated method stub
-				return false;
-			}	     
-        	});*/
-
-
-
-			
+        
+        CheckBoxPreference  night_checkbox = (CheckBoxPreference) findPreference("night_mode_key");        
+       			
     }
     
     @Override
@@ -90,16 +64,14 @@ OnSharedPreferenceChangeListener{
     protected void onResume() {
         super.onResume();
         // Set up a listener whenever a key changes
-        getPreferenceScreen().getSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         // Unregister the listener whenever a key changes
-        getPreferenceScreen().getSharedPreferences()
-                .unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
     
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -110,42 +82,49 @@ OnSharedPreferenceChangeListener{
         SharedPreferences.Editor editor = s.edit();
 
         // Let's do something a preference value changes
-        if (key.equals("night_mode")) 
+        if (key.equals("night_mode_key")) 
         {
             // Create a reference to the checkbox (in this case):
-            CheckBoxPreference mHints = (CheckBoxPreference)getPreferenceScreen().findPreference("english mode");
+            CheckBoxPreference mHints = (CheckBoxPreference)getPreferenceScreen().findPreference("night_mode_key");
+            
             //Lets change the summary so the user knows what will happen using a one line IF statement:
          //mHints.setSummary(mHints.isChecked() ? "Hints will popup." : "No hints will popup.");
             // Lets store the new preference:
-            /*SharedPreferences sharedPreferences = PreferenceManager
-            		                .getDefaultSharedPreferences(this);*/
-            		        boolean checkBoxValue = s.getBoolean("night_mode", false);
+            //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+          	boolean checkBoxValue = s.getBoolean("night_mode_key", false);
             		        
-            		       if (checkBoxValue) {
-            		            //checkBox.setChecked(true);
-            		    	   
-            		    	   
-            		    	   
-            		    	   Log.d(TAG, "true onshared" + checkBoxValue);
-            		        } 
-            		       else
-            		        {
-            		        	Log.d(TAG, "false onshared" + checkBoxValue);
-            			            //checkBox.setChecked(false);
-            			        }
-            
-         editor.putBoolean("night_mode", mHints.isChecked());
-         
-         
+       if (checkBoxValue) 
+	         {
+
+    	   
+	              Log.d(TAG, "true onshared" + checkBoxValue);
+	            
+	            	//setContentView(R.layout.activity_main);
+	            	View v = findViewById(R.id.LinearLayout1);
+	            	//View root = v.getRootView();
+	            	
+	            	v.setBackgroundColor(0xffffffff);
+	              /*((TextView) findViewById(R.id.hanziTextView)).setTextColor(0xff000000);
+	              ((TextView) findViewById(R.id.timerTextView)).setTextColor(0xff000000);
+	              ((TextView) findViewById(R.id.instructionTextView)).setTextColor(0xff000000);*/
+	            		   		
+	         }
+       else
+             {
+    	   /* findViewById(R.id.LinearLayout1).setBackgroundColor(0xff000000);
+            	((TextView) findViewById(R.id.hanziTextView)).setTextColor(0xff444444);
+                ((TextView) findViewById(R.id.timerTextView)).setTextColor(0xff444444);
+                ((TextView) findViewById(R.id.instructionTextView)).setTextColor(0xff444444);*/
+                Log.d(TAG, "false onshared" + checkBoxValue);
+            }    		    	   
+            		    	      		        	
+         //checkBox.setChecked(false);
         
-        /**
-         * You could perform several else if statements, or probably better use a switch block.
-         */
+         editor.putBoolean("night_mode_key", mHints.isChecked());
 
         // Save the results:
         editor.commit();
-        
-    }
+   }
 
         if (key.equals("language_key")) {
 

@@ -1,16 +1,4 @@
 package com.MeadowEast.audiotest;
-import android.view.GestureDetector;
-import com.MeadowEast.R;
-import com.MeadowEast.UpdateService.Alarm;
-import com.MeadowEast.UpdateService.CheckUpdate;
-import com.MeadowEast.UpdateService.DownloadService;
-import com.MeadowEast.UpdateService.UnZip;
-
-import com.MeadowEast.dbOpenHelper.TingshuoDatasource;
-import com.MeadowEast.dbOpenHelper.TingshuoHistDatasource;
-import com.MeadowEast.model.HistoryModel;
-import com.MeadowEast.model.Model;
-import android.view.GestureDetector.OnGestureListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -21,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import com.MeadowEast.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -52,6 +42,8 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,6 +57,15 @@ import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.MeadowEast.UpdateService.Alarm;
+import com.MeadowEast.UpdateService.CheckUpdate;
+import com.MeadowEast.UpdateService.DownloadService;
+import com.MeadowEast.UpdateService.UnZip;
+import com.MeadowEast.dbOpenHelper.TingshuoDatasource;
+import com.MeadowEast.dbOpenHelper.TingshuoHistDatasource;
+import com.MeadowEast.model.HistoryModel;
+import com.MeadowEast.model.Model;
 /**
  *@author bjsabbeth
  *@author Jonathan Kosar
@@ -103,6 +104,7 @@ public class MainActivity extends Activity  implements OnClickListener,
 	private Handler mHandler;
 	private int delayTime;
 	static Context context;
+	boolean isNightMode = false;
 	
 	public static final int progress_bar_type = 0;
 	
@@ -131,6 +133,7 @@ public class MainActivity extends Activity  implements OnClickListener,
 	TingshuoDatasource datasource;
 	private ArrayList<String> availableClips;
 	private ArrayList<String> probabilityArray;
+	private ArrayList<String> ENGLISH_CLIP_ARRAY;
 	String currentClip;
 	String lastClip;
 	boolean sameTurn;
@@ -440,13 +443,14 @@ public static  void readClipInfo() {
                 (GestureOverlayView) findViewById(R.id.gestureOverlayView1);
             gOverlay.addOnGesturePerformedListener(this); 
             
-           // gOverlay.setGestureStrokeType(GestureOverlayView.GESTURE_STROKE_TYPE_MULTIPLE);
+           gOverlay.setGestureStrokeType(GestureOverlayView.GESTURE_STROKE_TYPE_MULTIPLE);
             gOverlay.setGestureColor(Color.TRANSPARENT);
             gOverlay.setUncertainGestureColor(Color.TRANSPARENT);
             
   //////////////////////////////////Custom Gesutre Overlay////////////////////////////////// 
             
-            
+            SharedPreferences sp = getSharedPreferences("MyPref", 0);
+            String hexaColor = sp.getString("hexa", "0xff000000");
             
             //mHandler.post(mUpdateUI);
     		//start();
@@ -498,7 +502,7 @@ public static  void readClipInfo() {
 		f.mkdirs();
 		
 		
-		boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), 0, new Intent("com.MeadowEast.UpdateService.Alarm"),  PendingIntent.FLAG_NO_CREATE) != null);
+		boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), 0, new Intent("com.MeadowEast.UpdateService.AlarmService"),  PendingIntent.FLAG_NO_CREATE) != null);
 		
 		Log.d(TAG, "Alarm is already active" + alarmUp );
 		
@@ -886,46 +890,47 @@ public boolean onOptionsItemSelected(MenuItem item)
 	{
 		
 		if (actionBarDrawerToggle.onOptionsItemSelected(item)) 
-		{
-            return true;
-        }
+			{
+	            return true;
+	        }
 		// Take appropriate action for each action item click
 		switch (item.getItemId()) 
 		{
 		case R.id.action_settings:
-			
 			startActivity(new Intent(this, QuickPrefsActivity.class));
-			// setContentView(R.layout.settings_activity);
+			
 			return true;
 		case R.id.action_check_updates:
-
 			if (isNetworkAvailable()== true)
-	    	{
-			try 
-			{
-				new CheckUpdate().execute();
-			} 
-			catch (IOException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    	}
+		    	{
+					try 
+						{
+							new CheckUpdate().execute();
+						} 
+					catch (IOException e) 
+						{
+							
+							e.printStackTrace();
+						}
+		    	}
 			else
-			{
-				Toast.makeText(MainActivity.this, "No internet for update check, try again in little!", Toast.LENGTH_SHORT).show();
-			}
+				{
+					Toast.makeText(MainActivity.this, "No internet for update check, try again in little!", Toast.LENGTH_SHORT).show();
+				}
 
+			return true;
+		case R.id.action_rewind:
+			rewind();
+			
 			return true;
 		case R.id.action_trans:
-			Intent x = new
-			Intent(getApplicationContext(),DisplayDict.class);
-			startActivity(x);
+			startActivity(new Intent(this, DisplayDict.class));
 			return true;
+		case R.id.action_stats:	
+			startActivity(new Intent(this, Stats.class));
 		case R.id.share:
 			getDefaultShareIntent();
-	
-			
+		
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -959,47 +964,16 @@ public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
         	String weirdcir = "weirdcir";
         		
         //if (action.equals( circle )|| action.equals( halfcir )|| action.equals( threecir ) || action.equals( weirdcir )|| action.equals( squcir )|| action.equals( smallcir )|| action.equals( pearcir )|| action.equals( horovalcir )|| action.equals( bigcir ))
-   
+        	//Repeat
  
             if ( action.equals( halfcir )|| action.equals( threecir ) )
             {
             
-            	Log.i(TAG, " REPEAT "+  key);
-            	
-              Toast.makeText(this, "Repeat", Toast.LENGTH_SHORT).show();	
-              
-              repeatHandler(key);
-              createAndInsertHistModel();/////inserts to the history
-              
-              repeatHandler(key);
-              lastTurn = 'R';
-			if (!clockRunning)
-				toggleClock();
-			if (sample != null) 
-			{
-				setHanzi("");
-				if (mp != null) 
-				{
-					mp.stop();
-					mp.release();
-				}
-				mp = new MediaPlayer();
-				mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-				try 
-				{
-					mp.setDataSource(getApplicationContext(),
-							Uri.fromFile(sample));
-					mp.prepare();
-					mp.start();
-				} 
-				catch (Exception e) 
-				{
-					Log.d(TAG, "Couldn't get mp3 file");
-				}
-
-			}
+            		rewind();
 			
             }
+            
+            //Pause
             
             if (action.equals( twolines ))
             {
@@ -1009,6 +983,48 @@ public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
             }
         }
     }
+
+void rewind()
+{
+ 	Log.i(TAG, " REPEAT "+  key);
+ 	try 
+	{
+    Toast.makeText(this, "Repeat", Toast.LENGTH_SHORT).show();	
+    
+    repeatHandler(key);
+    createAndInsertHistModel();/////inserts to the history
+    
+    repeatHandler(key);
+    lastTurn = 'R';
+	if (!clockRunning)
+		toggleClock();
+	if (sample != null) 
+	{
+		setHanzi("");
+		if (mp != null) 
+			{
+				mp.stop();
+				mp.release();
+			}
+				mp = new MediaPlayer();
+				mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		
+				mp.setDataSource(getApplicationContext(),
+						Uri.fromFile(sample));
+				mp.prepare();
+				mp.start();
+			} 
+	}
+		catch (Exception e) 
+			{
+				Log.d(TAG, "Couldn't get mp3 file");
+				Toast.makeText(this, "Try playing before repeating, please!", Toast.LENGTH_SHORT).show();	
+			}
+
+	
+	
+  }
+  
 
 
 
@@ -1049,6 +1065,32 @@ public boolean isNetworkAvailable()
 	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 
+
+        
+
+
+
+
+/*public void nightMode()
+{
+	
+	if(isNightMode)
+		{
+			isNightMode = false;
+			findViewById(R.id.LinearLayout1).setBackgroundColor(0xffffffff);
+			((TextView) findViewById(R.id.hanziTextView)).setTextColor(0xff000000);
+			((TextView) findViewById(R.id.timerTextView)).setTextColor(0xff000000);
+			((TextView) findViewById(R.id.instructionTextView)).setTextColor(0xff000000);
+		}
+	else
+		{
+			isNightMode = true;
+			findViewById(R.id.LinearLayout1).setBackgroundColor(0xff000000);
+			((TextView) findViewById(R.id.hanziTextView)).setTextColor(0xff444444);
+			((TextView) findViewById(R.id.timerTextView)).setTextColor(0xff444444);
+			((TextView) findViewById(R.id.instructionTextView)).setTextColor(0xff444444);
+		}
+}*/
 
 private boolean isEmptyDirectory(File file)
 {
@@ -1252,12 +1294,7 @@ public void onSwipeLeft() {
      String entryvalue = sharedPreferences.getString( "language_key", "");
      Log.d(TAG, "Entryvalue " + entryvalue);
      
-     
-	    	
-	
-	
-	
-	
+
 	try{
 
 	
@@ -1402,9 +1439,30 @@ public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
 
 @Override
 public void onShowPress(MotionEvent arg0) {
-	// TODO Auto-generated method stub
-	Log.i(LOGTAG, "testsing4");
-	//Toast.makeText(getApplicationContext(), "Show Press gesture", 100).show();
+	//Toast.makeText(this, "ShowHanziTap", Toast.LENGTH_SHORT).show();
+	
+	Log.e(TAG, "onShowPress");
+	try
+	{
+	passkey = key;
+			
+			Log.e(TAG, "The key that is inside of onShowPress " + passkey);
+			if (!clockRunning)
+				toggleClock();
+				
+			if (sample != null)
+				setHanzi(hanzi.get(key)); 
+				
+			else
+			{
+				Toast.makeText(this, "Can you first slide left to play, so we know which one you want!", Toast.LENGTH_LONG).show();
+			}
+	}
+	catch (Exception e) 		
+	{
+		
+		Log.i(LOGTAG, "Exception inside of onShowPress" + e);
+	}
 }
 
 @Override
@@ -1416,17 +1474,7 @@ public boolean onTouchEvent(MotionEvent event) {
 @Override
 public boolean onSingleTapUp(MotionEvent e) {
 	
-	//Toast.makeText(this, "ShowHanziTap", Toast.LENGTH_SHORT).show();
-	Log.e(TAG, "BJS tap up");
-	passkey = key;
 	
-	Log.e(TAG, "This is key inside of Single Tap " + passkey);
-	if (!clockRunning)
-		toggleClock();
-	if (sample != null)
-		setHanzi(hanzi.get(key)); // Should add default value: error
-									// message if no hanzi for key
-   // Toast.makeText(getApplicationContext(), "Single Tap Gesture", 100).show();
     Log.i(LOGTAG, "testsing2");
     return true;
 }
@@ -1448,6 +1496,7 @@ protected void onResume() {
 super.onResume();
 datasource.open();
 registerReceiver(DownloadService.onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+Log.i(TAG, "You came in and entered RESUME");
 }
 
 public void updateSlideHistList()
@@ -1575,14 +1624,34 @@ return model;
 *4)Return the array index
 *
 */
+
+
+
 private String getClip()
 {
- // sameTurn = false;
- 
-  rnd = new Random();
-  int index = rnd.nextInt(probabilityArray.size());
-  //index_getClip = index;
-  return probabilityArray.get(index);
+
+	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+
+	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+     
+    String entryvalue = sharedPreferences.getString( "language_key", "");
+    
+    Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
+    
+
+	if (entryvalue.equals("EN"))
+		{
+			rnd = new Random();	
+			int index =  rnd.nextInt(ENGLISH_CLIP_ARRAY.size());	
+			return ENGLISH_CLIP_ARRAY.get(index);
+		}
+	else
+		{
+			rnd = new Random();
+			int index = rnd.nextInt(probabilityArray.size());
+			return probabilityArray.get(index);
+		}
+
 
 }
 

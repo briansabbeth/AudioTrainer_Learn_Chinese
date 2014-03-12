@@ -8,9 +8,9 @@
 		
 		<CheckBoxPreference 
 		    android:id="@+id/night_mode_checkbox"
-			android:key="night_mode"
+			android:key="night_mode_key"
 			android:summary="Enable or disable night mode"
-			android:title="Enable Night Mode" 
+			android:title="Night Mode" 
 			android:defaultValue="false"	/>
 		
         <ListPreference 
@@ -22,9 +22,9 @@
             android:entryValues="@array/LanguageValues"   /> 
             
         <EditTextPreference
-	            android:key="time_usage_key"
-	            android:title="7 Day Usage"
-	            android:summary="A total of usage of 7 days." />
+	        android:key="time_usage_key"
+	        android:title="7 Day Usage"
+	        android:summary="A total of usage of 7 days." />
 
 	</PreferenceCategory>
 	

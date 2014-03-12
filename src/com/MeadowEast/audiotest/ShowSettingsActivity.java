@@ -29,7 +29,7 @@ public class ShowSettingsActivity extends Activity {
 
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("\n" + sharedPrefs.getBoolean("night_mode", true));
+		builder.append("\n" + sharedPrefs.getBoolean("night_mode_key", true));
 		builder.append("\n" + sharedPrefs.getString("time_usage_key", "-1"));
 		builder.append("\n" + sharedPrefs.getString("language_key", "-1"));
 
