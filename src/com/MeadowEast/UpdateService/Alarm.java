@@ -15,7 +15,8 @@ import android.widget.Toast;
 
 
 public class Alarm extends BroadcastReceiver 
-{    
+{
+	
 	private static final String TAG = "Alarm BroadcastReceiver";
 	
      @Override
@@ -25,52 +26,52 @@ public class Alarm extends BroadcastReceiver
          PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
          wl.acquire();
          Log.d(TAG, "made it to ALARM");
-         // Put here YOUR code.
-         //Toast.makeText(context, "Alarm !!!!!!!!!!", Toast.LENGTH_LONG).show(); // For example
+         wl.release();
         
          try 
 	        {
 				new CheckUpdate().execute();
+				
 			} 
          catch (IOException e) 
 	        {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
+				
 			}
          
-         wl.release();
+         
      }
 
  public void SetAlarm(Context context)
  {
      AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
      Intent i = new Intent(context, Alarm.class);
-     PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
+     PendingIntent pi = PendingIntent.getBroadcast(context, 0, i,PendingIntent.FLAG_UPDATE_CURRENT);
      
      if (!isNetworkAvailable(context))
- 	{
-      am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 60 * 4, pi); // Millisec * Second * Minute * Hours
-      Log.d(TAG, "Alarm set for 4 hours, no internet!");
- 	
- 	}
+	 	{
+	      	am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 60 * 4, pi); // Millisec * Second * Minute * Hours
+	      	//am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 1, pi); //Test with 1 minute intervals
+	      	Log.d(TAG, "Alarm set for 4 hours, no internet!");
+	 	
+	 	}
      else
-     {
-     am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 60 * 24, pi); // Millisec * Second * Minute * Hours
-     Log.d(TAG, "Alarm set for 24 hours!");
-     
-     }
-     
- 
- 
+	     {	
+		     am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 60 * 24, pi); // Millisec * Second * Minute * Hours
+		     //am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 1, pi); //Test with 1 minute intervals
+		     Log.d(TAG, "Alarm set for 24 hours!");  
+	     }
  }
 
  public void CancelAlarm(Context context)
- {
-     Intent intent = new Intent(context, Alarm.class);
-     PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
-     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-     alarmManager.cancel(sender);
- }
+	 {
+	     Intent intent = new Intent(context, Alarm.class);
+	     PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
+	     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+	     alarmManager.cancel(sender);
+	 }
+ 
  public boolean isNetworkAvailable(Context context) 
 	{
 	    ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

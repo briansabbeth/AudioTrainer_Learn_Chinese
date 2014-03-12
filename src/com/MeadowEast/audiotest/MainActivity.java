@@ -37,6 +37,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.CheckBoxPreference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -59,6 +60,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.MeadowEast.UpdateService.Alarm;
+import com.MeadowEast.UpdateService.AlarmService;
 import com.MeadowEast.UpdateService.CheckUpdate;
 import com.MeadowEast.UpdateService.DownloadService;
 import com.MeadowEast.UpdateService.UnZip;
@@ -158,7 +160,7 @@ TingshuoHistDatasource hist_datasource;
 
 	
 	
-	private final Runnable mUpdateUI = new Runnable() 
+	/*private final Runnable mUpdateUI = new Runnable() 
 	{
 	    @Override
 		public void run()
@@ -182,8 +184,8 @@ TingshuoHistDatasource hist_datasource;
 	    	else if (!alarmUp)
 		    	{
 	    		
-	    		/*Alarm alarm = new Alarm();
-				alarm.SetAlarm(getBaseContext());*/
+	    		Alarm alarm = new Alarm();
+				alarm.SetAlarm(getBaseContext());
 				Log.d(TAG, "Alarm was not active but now is!");
 				//mHandler.postDelayed(mUpdateUI, 86400000);
 				
@@ -197,7 +199,7 @@ TingshuoHistDatasource hist_datasource;
 	    }
 	    
 	};
-	
+	*/
 	
 	
 	
@@ -502,20 +504,21 @@ public static  void readClipInfo() {
 		f.mkdirs();
 		
 		
-		boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), 0, new Intent("com.MeadowEast.UpdateService.AlarmService"),  PendingIntent.FLAG_NO_CREATE) != null);
-		
-		Log.d(TAG, "Alarm is already active" + alarmUp );
-		
-		if (alarmUp)
+		//boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), 0, new Intent("AlarmService"),  PendingIntent.FLAG_NO_CREATE) != null);
+		boolean alarmUp1 =isServiceAlarmOn(this);
+		//Log.d(TAG, "Alarm is " +  alarmUp1 );
+		//startService(new Intent(this, AlarmService.class));
+		if (!isServiceAlarmOn(this))
     	{
 
             Alarm alarm = new Alarm();
 			alarm.SetAlarm(getBaseContext());
-    		Log.d(TAG, "Alarm is already active");
+    		Log.d(TAG, "Alarm is not set " + alarmUp1 );
     	}
 		else
 		{
-		initializationcheck();
+			Log.d(TAG, "initializationcheck and Alarm is already active " + alarmUp1 );
+			initializationcheck();
 		}
 		
 		mainDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/");
@@ -655,25 +658,19 @@ public static  void readClipInfo() {
        
        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-       /*Log.i(LOGTAG,"Before Alarm"); 
-        	
-		
-	  	Intent i = new Intent(this, CheckUpdate.class);
-	  	PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
-	  	AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-	  	am.cancel(pi); // cancel any existing alarms
-	  	am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-	  	    SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
-	  	    AlarmManager.INTERVAL_FIFTEEN_MINUTES, pi);
-	  	
-	  	Alarm alarm = new Alarm();
-	  	alarm.SetAlarm(getBaseContext());
-		
-	  	Log.i(LOGTAG,"After ALarm"); */
+      
 		
 		
 	}
 	
+	public static boolean isServiceAlarmOn(Context context)
+	{
+		Intent i = new Intent(context, com.MeadowEast.UpdateService.Alarm.class);
+		PendingIntent pi = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_NO_CREATE);
+		Log.d(TAG, "AlarmOn check is  " + pi );
+		return pi != null;
+		
+	}
 	private class DrawerItemClickListener implements ListView.OnItemClickListener 
 	{
         @Override
@@ -1030,7 +1027,8 @@ void rewind()
 
 private Intent getDefaultShareIntent()
 {
-	
+	try
+	{
     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
     intent.setType("audio/mp3");
   
@@ -1053,6 +1051,14 @@ private Intent getDefaultShareIntent()
    intent.putExtra(Intent.EXTRA_STREAM, uri);
    startActivity(intent);
    return intent;
+	}
+	catch (Exception e) 
+	{
+		Log.i(LOGTAG, "Share exception", e);
+		Toast.makeText(this, "Slide left to play clip first so we know which clip you want to share!", Toast.LENGTH_SHORT).show();
+		return null;
+		
+	}
 	
 }
 
@@ -1491,11 +1497,32 @@ public boolean onSingleTapConfirmed(MotionEvent e) {
 * When program is resumed, open the database.
 */
 @Override
-protected void onResume() {
-// TODO Auto-generated method stub
+protected void onResume()
+{
+
 super.onResume();
 datasource.open();
 registerReceiver(DownloadService.onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
+SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+boolean pref = sharedPreferences.getBoolean("night_mode_key", false);
+	if (pref)
+		{
+			findViewById(R.id.LinearLayout1).setBackgroundColor(0xff000000);
+			((TextView) findViewById(R.id.hanziTextView)).setTextColor(0xff444444);
+			((TextView) findViewById(R.id.timerTextView)).setTextColor(0xff444444);
+			((TextView) findViewById(R.id.instructionTextView)).setTextColor(0xff444444);
+			Log.e(TAG, "Resume, inside true, boolean for night mode is " + pref);
+		}
+	else
+		{
+			findViewById(R.id.LinearLayout1).setBackgroundColor(0xffffffff);
+			((TextView) findViewById(R.id.hanziTextView)).setTextColor(0xff000000);
+			((TextView) findViewById(R.id.timerTextView)).setTextColor(0xff000000);
+			((TextView) findViewById(R.id.instructionTextView)).setTextColor(0xff000000);	
+			Log.e(TAG, "Resume, inside false, boolean for night mode is " + pref);
+		}
+
 Log.i(TAG, "You came in and entered RESUME");
 }
 

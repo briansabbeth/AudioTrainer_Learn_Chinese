@@ -33,7 +33,7 @@ public class ShowSettingsActivity extends Activity {
 		builder.append("\n" + sharedPrefs.getString("time_usage_key", "-1"));
 		builder.append("\n" + sharedPrefs.getString("language_key", "-1"));
 
-		//builder.append("\n" + sharedPrefs.getBoolean("time_history_key", true));
+		
 
 		TextView settingsTextView = (TextView) findViewById(R.id.settings_text_view);
 		settingsTextView.setText(builder.toString());

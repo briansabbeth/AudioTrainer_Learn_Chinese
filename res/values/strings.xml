@@ -37,6 +37,8 @@
         <item>Item 1</item>
     </string-array>
  
+	
+	
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
