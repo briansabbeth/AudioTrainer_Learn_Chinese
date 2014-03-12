@@ -134,8 +134,9 @@ public class MainActivity extends Activity  implements OnClickListener,
 	private static final String LOGTAG = "TINGSHOU_DB ";
 	TingshuoDatasource datasource;
 	private ArrayList<String> availableClips;
+	private ArrayList<String> englishavailableClips;
 	private ArrayList<String> probabilityArray;
-	private ArrayList<String> ENGLISH_CLIP_ARRAY;
+	public ArrayList<String> ENGLISH_CLIP_ARRAY;
 	String currentClip;
 	String lastClip;
 	boolean sameTurn;
@@ -284,7 +285,7 @@ public static  void readClipInfo() {
 		String line;
 			while ((line = in.readLine()) != null)
 			{
-				String fixedline = new String(line.getBytes(), "utf-8");
+				String fixedline = new String(line.getBytes());
 				String[] fields = fixedline.split("\\t");
 				if (fields.length == 3)
 					{
@@ -318,25 +319,29 @@ public static  void readClipInfo() {
 		Log.d(TAG, "before else readclipfinfo " + entryvalue);
 
 		try {
-		FileReader fr = new FileReader(file);
-		BufferedReader in = new BufferedReader(fr);
-		String line;
-		while ((line = in.readLine()) != null) {
-		String fixedline = new String(line.getBytes(), "utf-8");
-		String[] fields = fixedline.split("\\t");
-		if (fields.length == 3) {
-		hanzi.put(fields[0], fields[1]);
-		instructions.put(fields[0], fields[2]);
-		} else {
-		Log.d(TAG, "Bad line: " + fields.length + " elements");
-		Log.d(TAG, fixedline);
-		}
-		}
-		in.close();
-		}
-		catch (Exception e) {
-		Log.d(TAG, "before else readclipfinfo " + entryvalue);
-		}
+				FileReader fr = new FileReader(file);
+				BufferedReader in = new BufferedReader(fr);
+				String line;
+				while ((line = in.readLine()) != null) 
+					{
+						String fixedline = new String(line.getBytes(), "utf-8");
+						String[] fields = fixedline.split("\\t");
+						if (fields.length == 3) {
+						hanzi.put(fields[0], fields[1]);
+						instructions.put(fields[0], fields[2]);
+					} 
+				else 
+					{
+						Log.d(TAG, "Bad line: " + fields.length + " elements");
+						Log.d(TAG, fixedline);
+					}
+				}
+				in.close();
+			}
+		catch (Exception e) 
+			{
+				Log.d(TAG, "before else readclipfinfo " + entryvalue);
+			}
 
 		Log.d(TAG, "after");
 
@@ -465,7 +470,7 @@ public static  void readClipInfo() {
     		 /**********************DATABASE CODE onCreate()******************************************/
     	     //////History Table
     	          Log.i(LOGTAG, "BJS ABOUT TO OPEN HISTDATASOURCE");
-    	     hist_datasource = new TingshuoHistDatasource(this);
+    	          hist_datasource = new TingshuoHistDatasource(this);
     	          hist_datasource.open();
     	          Log.i(LOGTAG, "BJS OPENED HISTDATASOURCE");
     	          outputHistModelList();
@@ -479,7 +484,9 @@ public static  void readClipInfo() {
     	     turnCount = 0;
     	          //sameTurn = false;
     	     availableClips = new ArrayList<String>();
+    	     englishavailableClips = new ArrayList<String>();
     	          probabilityArray = new ArrayList<String>();
+    	          ENGLISH_CLIP_ARRAY = new ArrayList<String>();
     	          Log.i(LOGTAG, "ABOUT TO OPEN DATASOURCE");
     	            
     	datasource = new TingshuoDatasource(this);
@@ -608,30 +615,14 @@ public static  void readClipInfo() {
 		}
 		
 		
-		
-		
-		//Slide Menu Stuff
-		
-		
+		//Slide Menu Stuff	
 		 // get list items from strings.xml
        drawerListViewItems = getResources().getStringArray(R.array.items);
-       
-       
+          
        // get ListView defined in activity_main.xml
        drawerListView = (ListView) findViewById(R.id.left_drawer);
 
        // Set the adapter for the list view
-       
-       
-     /*  if (testStringList == null)
-       {	
-       drawerListView.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_listview_item, histlist));
-       }
-       else
-       {
-       drawerListView.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_listview_item, testStringList));
-       }*/
-       
       drawerListView.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_listview_item, histlist));
        // 2. App Icon
        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -657,9 +648,7 @@ public static  void readClipInfo() {
        drawerListView.setOnItemClickListener(new DrawerItemClickListener());
        
        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
-      
-		
+	
 		
 	}
 	
@@ -728,8 +717,7 @@ public static  void readClipInfo() {
     	{
     		initializationcheck();
     	}
-    	
-       
+
             databaseSwipeHandler();
             
             createAndInsertHistModel();
@@ -1356,6 +1344,9 @@ public void onSwipeLeft() {
 	Log.e(TAG, "BJS onSwipeLeft().testClip() " + test_clip);
 	
 	key = test_clip;
+	
+	Log.e(TAG, "BJS onSwipeLeft().testClip() " + key);
+	
 	String mp3file = key + ".mp3";
     
     Log.e(TAG, "BJS onSwipeLeft().testClip() " + test_clip);    
@@ -1569,7 +1560,68 @@ public void updateSlideHistList()
 
 private void initializeAvailableClips()
 {
-    Log.i(LOGTAG, "BJS InINITIALIZE");
+   
+	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+
+	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+     
+    String entryvalue = sharedPreferences.getString( "language_key", "");
+    
+    Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
+    
+
+if (entryvalue.equals("EN"))
+		{
+	Log.i(LOGTAG, "BJS InINITIALIZE");
+
+	englishavailableClips.clear();
+	ENGLISH_CLIP_ARRAY.clear();
+
+
+	String tempKey;	
+	Model tempModel = new Model();
+
+
+	//get the data and create the probaility array with that
+	//clip number the appropriate amount of times.
+	for(int i = 0; i< cliplist.length; ++i)
+	{
+	tempKey = cliplist[i];
+	tempKey = tempKey.substring(0, tempKey.length() - 4);
+	englishavailableClips.add(i, tempKey);
+	
+/*	* If the dats is already in the database:
+	* 1)get the probabilty of the data by adding the turn fields
+	* 2)add it to the probability
+	* If data is not in the database:
+	* 1)create and insert using Model class;
+	* 2)add the clip number one time to the probabilityArray.*/
+	
+	if (datasource.isDataInDatabase(tempKey))
+	{
+	tempModel = datasource.findModel(tempKey);
+	//if ((tempModel.getTurnZero() + tempModel.getTurnOne()+tempModel.getTurnTwo)>3())
+	///
+	///
+	for(int j = 0; j<tempModel.getProbability(); ++j)
+	{	
+		ENGLISH_CLIP_ARRAY.add(tempKey);
+	Log.i(LOGTAG, "IN DBASE " + tempModel.getClipTxtNumber() + " PROB "+ tempModel.getProbability());	
+	}
+
+	}
+	else//put it in the databases add it to the probabilityArray as 1.
+	{
+	createAndInsertModel(tempKey);
+	ENGLISH_CLIP_ARRAY.add(tempKey);
+
+	}
+
+	}
+		}
+else
+{
+	Log.i(LOGTAG, "BJS InINITIALIZE");
 
 availableClips.clear();
 probabilityArray.clear();
@@ -1615,7 +1667,7 @@ probabilityArray.add(tempKey);
 }
 
 }
-
+}
 }
 
 /*
@@ -1666,10 +1718,14 @@ private String getClip()
     Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
     
 
-	if (entryvalue.equals("EN"))
+if (entryvalue.equals("EN"))
 		{
+		Log.d(TAG, "getclip 1");
 			rnd = new Random();	
-			int index =  rnd.nextInt(ENGLISH_CLIP_ARRAY.size());	
+			Log.d(TAG, "getclip 2 " + ENGLISH_CLIP_ARRAY.size());
+			int index =  rnd.nextInt(ENGLISH_CLIP_ARRAY.size());
+			Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + index);
+			Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + ENGLISH_CLIP_ARRAY.get(index));
 			return ENGLISH_CLIP_ARRAY.get(index);
 		}
 	else
