@@ -86,7 +86,7 @@ public class CheckUpdate extends AsyncTask<String, String, String>
 					{
 						Log.d(TAG, "Update check, files locally and remote are of same size.");
 						
-						 
+						check_point++;
 						return false;
 						
 						//Toast.makeText(this, "No new updates!", Toast.LENGTH_SHORT).show();
@@ -126,20 +126,20 @@ public class CheckUpdate extends AsyncTask<String, String, String>
 			if(quickcheckupdate(clipinfoURL, clipinfotxtLocation))
 			{
 				DownloadService.startDownload(clipinfoURL, "clipinfo.txt");
-				check_point++;
+				
 			}
 			
 			if(quickcheckupdate(clipszipURL, clipszipLocation))
 			{
 				DownloadService.startDownload(clipszipURL, "clips.zip");
-				check_point++;
+				
 			}
 			
 			if(quickcheckupdate(englishclipszipURL, englishzipLocation))
 			{
 			
 				DownloadService.startDownload(englishclipszipURL, "english.zip");
-				check_point++;
+				
 				
 			}
 		}

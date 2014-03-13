@@ -86,6 +86,7 @@ public class MainActivity extends Activity  implements OnClickListener,
 	private GestureLibrary gLibrary;
 	private MediaPlayer mp;
 	public static String[] cliplist;
+	//public static String[] englishcliplist;
 	public File sample;
 	private static File mainDir;
 	private static File englishDir;
@@ -907,7 +908,7 @@ public static  void readClipInfo() {
 		
 		
 		//boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), 0, new Intent("AlarmService"),  PendingIntent.FLAG_NO_CREATE) != null);
-		boolean alarmUp1 =isServiceAlarmOn(this);
+	/*	boolean alarmUp1 =isServiceAlarmOn(this);
 		//Log.d(TAG, "Alarm is " +  alarmUp1 );
 		//startService(new Intent(this, AlarmService.class));
 		if (!isServiceAlarmOn(this))
@@ -921,23 +922,27 @@ public static  void readClipInfo() {
 		{
 			Log.d(TAG, "initializationcheck and Alarm is already active " + alarmUp1 );
 			initializationcheck();
-		}
+		}*/
 		
+		
+		initializationcheck();
 		mainDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/");
 		
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         
-        String pref = sharedPreferences.getString("updateInterval", "CH");
+       
 		
+        String pref = sharedPreferences.getString( "language_key", "");
         
         englishDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/english/");
         
         Log.i(TAG,"Startup string value " + pref); 
         
-        try {
-		if (pref == "EN")
+        try 
+        {
+        if (pref.equals("EN"))
 		{
 			clipDir = new File(englishDir, "clips");
 			cliplist = clipDir.list();
@@ -1904,8 +1909,41 @@ boolean pref = sharedPreferences.getBoolean("night_mode_key", false);
 			((TextView) findViewById(R.id.instructionTextView)).setTextColor(0xff000000);	
 			Log.e(TAG, "Resume, inside false, boolean for night mode is " + pref);
 		}
+	File sdCard = Environment.getExternalStorageDirectory();
+	mainDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/");
+	
+	PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+    
+	//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    
+	
+    String pref2 = sharedPreferences.getString( "language_key", "");
+    
+    englishDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/english/");
+    
+    Log.i(TAG,"Startup string value " + pref); 	
+	
+    
+    if (pref2.equals("EN"))
+	{
+		clipDir = new File(englishDir, "clips");
+		cliplist = clipDir.list();
+		//Toast.makeText(getApplicationContext(),"HELLO FROM PREF! ", Toast.LENGTH_SHORT).show();
+		Log.i(LOGTAG,"Startup String value inside EN" + pref); 
+	}
+	else
+	{
+		clipDir = new File(mainDir, "clips");
+		cliplist = clipDir.list();
+		Log.i(LOGTAG,"Startup String value inside else " + pref); 
+
+	}
+	
+	readClipInfo();
 
 Log.i(TAG, "You came in and entered RESUME");
+
+
 }
 
 public void updateSlideHistList()
@@ -2109,9 +2147,9 @@ private String getClip()
     Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
     
 
-if (entryvalue.equals("EN"))
+    if (entryvalue.equals("EN"))
 		{
-		Log.d(TAG, "getclip 1");
+			Log.d(TAG, "getclip 1");
 			rnd = new Random();	
 			Log.d(TAG, "getclip 2 " + ENGLISH_CLIP_ARRAY.size());
 			int index =  rnd.nextInt(ENGLISH_CLIP_ARRAY.size());
