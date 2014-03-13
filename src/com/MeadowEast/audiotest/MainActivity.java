@@ -389,7 +389,7 @@ public static  void readClipInfo() {
 	private void toggleClock() {
 		if (clockRunning) {
 			elapsedMillis += System.currentTimeMillis() - start;
-			calcTime();
+			//calcTime();
 			setHanzi("");
 		} else
 			start = System.currentTimeMillis();
