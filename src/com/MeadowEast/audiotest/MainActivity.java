@@ -880,9 +880,9 @@ public static  void readClipInfo() {
     	     turnCount = 0;
     	          //sameTurn = false;
     	     availableClips = new ArrayList<String>();
-    	     englishavailableClips = new ArrayList<String>();
+    	     //englishavailableClips = new ArrayList<String>();
     	          probabilityArray = new ArrayList<String>();
-    	          ENGLISH_CLIP_ARRAY = new ArrayList<String>();
+    	          //ENGLISH_CLIP_ARRAY = new ArrayList<String>();
     	          Log.i(LOGTAG, "ABOUT TO OPEN DATASOURCE");
     	            
     	datasource = new TingshuoDatasource(this);
@@ -1109,21 +1109,23 @@ public static  void readClipInfo() {
     			} 
     			catch (Exception e) 
     			{
+    				Toast.makeText(MainActivity.this, "Wrong language, try switching in settings!", Toast.LENGTH_SHORT).show();	
     				Log.d(TAG, "Couldn't get mp3 file");
     			}
     		} 
-    	}
-    	catch (Exception e) 
-    	{
-    		initializationcheck();
-    	}
+    	
+    	
 
             databaseSwipeHandler();
             
             createAndInsertHistModel();
            
-            updateSlideHistList();  
-           
+            updateSlideHistList(); 
+            }
+            catch (Exception e) 
+        	{
+        		initializationcheck();
+        	}
             drawerLayout.closeDrawer(drawerListView);
  
         }
@@ -1921,7 +1923,7 @@ boolean pref = sharedPreferences.getBoolean("night_mode_key", false);
     
     englishDir = new File(sdCard.getAbsolutePath() + "/Android/data/com.MeadowEast.audiotest/files/english/");
     
-    Log.i(TAG,"Startup string value " + pref); 	
+    Log.i(TAG,"Startup string value " + pref2); 	
 	
     
     if (pref2.equals("EN"))
@@ -1940,7 +1942,7 @@ boolean pref = sharedPreferences.getBoolean("night_mode_key", false);
 	}
 	
 	readClipInfo();
-
+	initializeAvailableClips();
 Log.i(TAG, "You came in and entered RESUME");
 
 
@@ -1990,16 +1992,16 @@ public void updateSlideHistList()
 private void initializeAvailableClips()
 {
    
-	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+	/*SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
 
 	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
      
     String entryvalue = sharedPreferences.getString( "language_key", "");
     
-    Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
+    Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);*/
     
 
-if (entryvalue.equals("EN"))
+/*if (entryvalue.equals("EN"))
 		{
 	Log.i(LOGTAG, "BJS ENGLISH InINITIALIZE");
 
@@ -2019,12 +2021,12 @@ if (entryvalue.equals("EN"))
 	tempKey = tempKey.substring(0, tempKey.length() - 4);
 	englishavailableClips.add(i, tempKey);
 	
-/*	* If the dats is already in the database:
+	* If the dats is already in the database:
 	* 1)get the probabilty of the data by adding the turn fields
 	* 2)add it to the probability
 	* If data is not in the database:
 	* 1)create and insert using Model class;
-	* 2)add the clip number one time to the probabilityArray.*/
+	* 2)add the clip number one time to the probabilityArray.
 	
 	if (datasource.isDataInDatabase(tempKey))
 	{
@@ -2049,7 +2051,7 @@ if (entryvalue.equals("EN"))
 	}
 		}
 else
-{
+{*/
 	Log.i(LOGTAG, "BJS InINITIALIZE");
 
 availableClips.clear();
@@ -2096,7 +2098,7 @@ probabilityArray.add(tempKey);
 }
 
 }
-}
+//}
 }
 
 /*
@@ -2137,7 +2139,7 @@ return model;
 
 private String getClip()
 {
-
+/*
 	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
 
 	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
@@ -2145,9 +2147,9 @@ private String getClip()
     String entryvalue = sharedPreferences.getString( "language_key", "");
     
     Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
-    
+    */
 
-    if (entryvalue.equals("EN"))
+/*    if (entryvalue.equals("EN"))
 		{
 			Log.d(TAG, "getclip 1");
 			rnd = new Random();	
@@ -2158,11 +2160,11 @@ private String getClip()
 			return ENGLISH_CLIP_ARRAY.get(index);
 		}
 	else
-		{
+		{*/
 			rnd = new Random();
 			int index = rnd.nextInt(probabilityArray.size());
 			return probabilityArray.get(index);
-		}
+		//}
 
 
 }
