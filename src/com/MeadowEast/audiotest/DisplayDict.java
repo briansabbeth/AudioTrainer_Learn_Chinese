@@ -8,6 +8,11 @@ import android.view.Menu;
 import android.webkit.WebView;
 
 
+/**@author Jonathan Kosar
+ * This Activity inflates when you select it from onOptionsItemSelected(MenuItem). 
+ * This fulfills the Internet dictionary lookup for Hanzi inside a WebView.
+ * It grabs the Hanzi through global variable passkey and attaches to the end of the search web address.
+*/
 public class DisplayDict extends Activity
 {
 	

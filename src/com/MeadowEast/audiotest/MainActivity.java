@@ -154,8 +154,15 @@ public class MainActivity extends Activity  implements OnClickListener,
 	/********DATABASE VARIABLE*******************************/
  //	
 
-	
-	
+	///Shared Preferences
+public int current_tick;
+public int prev_clip_index;
+public int current_clip_index;
+public ArrayList<String> cliplistwithrepeats;
+private static final String SHAREDPREF_SET = null;
+private static final String SHAREDPREF_CLIP_INDEX = null;
+private static final String SHAREDPREF_TOTAL_SECONDS = null;
+private static final String SHAREDPREF_ENG_CLIP_INDEX = null;	
 	
 	/********DATABASE VARIABLE*******************************/
 ////history table
@@ -1180,7 +1187,7 @@ public static  void readClipInfo() {
 	@Override
 	public boolean onLongClick(View v)
 	{
-		repeatHandler(key);
+		repeatHandler();
 		
 		switch (v.getId()) 
 		{
@@ -1381,15 +1388,14 @@ public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
 
 void rewind()
 {
- 	Log.i(TAG, " REPEAT "+  key);
+	Log.i(TAG, " REPEAT "+  key);
  	try 
 	{
     Toast.makeText(this, "Repeat", Toast.LENGTH_SHORT).show();	
     
-    repeatHandler(key);
+    repeatHandler();
     createAndInsertHistModel();/////inserts to the history
     
-    repeatHandler(key);
     lastTurn = 'R';
 	if (!clockRunning)
 		toggleClock();
@@ -1415,6 +1421,7 @@ void rewind()
 				Log.d(TAG, "Couldn't get mp3 file");
 				Toast.makeText(this, "Try playing before repeating, please!", Toast.LENGTH_SHORT).show();	
 			}
+
 
 	
 	
@@ -1976,6 +1983,56 @@ public void updateSlideHistList()
 	drawerListView.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_listview_item, histlist));
 }
 
+/*1)Set the boolean sameTurn to false;
+*2)Set the turnNumber to 0;
+*3)Get a randomindex from the array.
+*4)Return the array index
+*
+*/
+private String getClip()
+{
+ // sameTurn = false;
+ 
+  rnd = new Random();
+  int index = rnd.nextInt(cliplistwithrepeats.size());
+  //index_getClip = index;
+  return cliplistwithrepeats.get(index);
+
+}
+
+//
+//private String getClip()
+//{
+//
+// SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+//
+// sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+//
+// String entryvalue = sharedPreferences.getString( "language_key", "");
+//
+// Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
+//
+//
+// if (entryvalue.equals("EN"))
+// {
+// Log.d(TAG, "getclip 1");
+// rnd = new Random();
+// Log.d(TAG, "getclip 2 " + ENGLISH_CLIP_ARRAY.size());
+// int index = rnd.nextInt(ENGLISH_CLIP_ARRAY.size());
+// Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + index);
+// Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + ENGLISH_CLIP_ARRAY.get(index));
+// return ENGLISH_CLIP_ARRAY.get(index);
+// }
+// else
+// {
+// rnd = new Random();
+// int index = rnd.nextInt(cliplistwithrepeats.size());
+// return cliplistwithrepeats.get(index);
+// }
+//
+//
+//}
+
 /********************************
 * DATABASE STUFF
 *******************************/
@@ -1999,67 +2056,67 @@ public void updateSlideHistList()
 private void initializeAvailableClips()
 {
    
-	/*SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
 
-	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
      
     String entryvalue = sharedPreferences.getString( "language_key", "");
     
-    Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);*/
+    Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
     
 
-/*if (entryvalue.equals("EN"))
-		{
-	Log.i(LOGTAG, "BJS ENGLISH InINITIALIZE");
+if (entryvalue.equals("EN"))
+{
+Log.i(LOGTAG, "BJS ENGLISH InINITIALIZE");
 
-	englishavailableClips.clear();
-	ENGLISH_CLIP_ARRAY.clear();
-
-
-	String tempKey;	
-	Model tempModel = new Model();
+englishavailableClips.clear();
+ENGLISH_CLIP_ARRAY.clear();
 
 
-	//get the data and create the probaility array with that
-	//clip number the appropriate amount of times.
-	for(int i = 0; i< cliplist.length; ++i)
-	{
-	tempKey = cliplist[i];
-	tempKey = tempKey.substring(0, tempKey.length() - 4);
-	englishavailableClips.add(i, tempKey);
-	
-	* If the dats is already in the database:
-	* 1)get the probabilty of the data by adding the turn fields
-	* 2)add it to the probability
-	* If data is not in the database:
-	* 1)create and insert using Model class;
-	* 2)add the clip number one time to the probabilityArray.
-	
-	if (datasource.isDataInDatabase(tempKey))
-	{
-	tempModel = datasource.findModel(tempKey);
-	//if ((tempModel.getTurnZero() + tempModel.getTurnOne()+tempModel.getTurnTwo)>3())
-	///
-	///
-	for(int j = 0; j<tempModel.getProbability(); ++j)
-	{	
-		ENGLISH_CLIP_ARRAY.add(tempKey);
-	Log.i(LOGTAG, "IN DBASE " + tempModel.getClipTxtNumber() + " PROB "+ tempModel.getProbability());	
-	}
+String tempKey;	
+Model tempModel = new Model();
 
-	}
-	else//put it in the databases add it to the probabilityArray as 1.
-	{
-	createAndInsertModel(tempKey);
-	ENGLISH_CLIP_ARRAY.add(tempKey);
 
-	}
+//get the data and create the probaility array with that
+//clip number the appropriate amount of times.
+for(int i = 0; i< cliplist.length; ++i)
+{
+tempKey = cliplist[i];
+tempKey = tempKey.substring(0, tempKey.length() - 4);
+englishavailableClips.add(i, tempKey);
 
-	}
-		}
+/* * If the dats is already in the database:
+* 1)get the probabilty of the data by adding the turn fields
+* 2)add it to the probability
+* If data is not in the database:
+* 1)create and insert using Model class;
+* 2)add the clip number one time to the probabilityArray.*/
+
+if (datasource.isDataInDatabase(tempKey))
+{
+tempModel = datasource.findModel(tempKey);
+//if ((tempModel.getTurnZero() + tempModel.getTurnOne()+tempModel.getTurnTwo)>3())
+///
+///
+for(int j = 0; j<tempModel.getProbability(); ++j)
+{	
+ENGLISH_CLIP_ARRAY.add(tempKey);
+Log.i(LOGTAG, "IN DBASE " + tempModel.getClipTxtNumber() + " PROB "+ tempModel.getProbability());	
+}
+
+}
+else//put it in the databases add it to the probabilityArray as 1.
+{
+createAndInsertModel(tempKey);
+ENGLISH_CLIP_ARRAY.add(tempKey);
+
+}
+
+}
+}
 else
-{*/
-	Log.i(LOGTAG, "BJS InINITIALIZE");
+{
+Log.i(LOGTAG, "BJS InINITIALIZE");
 
 availableClips.clear();
 probabilityArray.clear();
@@ -2069,43 +2126,43 @@ String tempKey;
 Model tempModel = new Model();
 
 
-	//get the data and create the probaility array with that
-	//clip number the appropriate amount of times.
-	for(int i = 0; i< cliplist.length; ++i)
-	{
-		tempKey = cliplist[i];
-		tempKey = tempKey.substring(0, tempKey.length() - 4);
-		availableClips.add(i, tempKey);
-		/*
-		* If the dats is already in the database:
-		* 1)get the probabilty of the data by adding the turn fields
-		* 2)add it to the probability
-		* If data is not in the database:
-		* 1)create and insert using Model class;
-		* 2)add the clip number one time to the probabilityArray.
-		*/
-		if (datasource.isDataInDatabase(tempKey))
-		{
-			tempModel = datasource.findModel(tempKey);
-			//if ((tempModel.getTurnZero() + tempModel.getTurnOne()+tempModel.getTurnTwo)>3())
-			///
-			///
-			for(int j = 0; j<tempModel.getProbability(); ++j)
-				{	
-					probabilityArray.add(tempKey);
-					Log.i(LOGTAG, "IN DBASE " + tempModel.getClipTxtNumber() + " PROB "+ tempModel.getProbability());	
-				}
-			
-		}
-		else//put it in the databases add it to the probabilityArray as 1.
-			{
-			createAndInsertModel(tempKey);
-			probabilityArray.add(tempKey);
-			
-			}
-	
-	}
-	//}
+//get the data and create the probaility array with that
+//clip number the appropriate amount of times.
+for(int i = 0; i< cliplist.length; ++i)
+{
+tempKey = cliplist[i];
+tempKey = tempKey.substring(0, tempKey.length() - 4);
+availableClips.add(i, tempKey);
+/*
+* If the dats is already in the database:
+* 1)get the probabilty of the data by adding the turn fields
+* 2)add it to the probability
+* If data is not in the database:
+* 1)create and insert using Model class;
+* 2)add the clip number one time to the probabilityArray.
+*/
+if (datasource.isDataInDatabase(tempKey))
+{
+tempModel = datasource.findModel(tempKey);
+//if ((tempModel.getTurnZero() + tempModel.getTurnOne()+tempModel.getTurnTwo)>3())
+///
+///
+for(int j = 0; j<tempModel.getProbability(); ++j)
+{	
+probabilityArray.add(tempKey);
+Log.i(LOGTAG, "IN DBASE " + tempModel.getClipTxtNumber() + " PROB "+ tempModel.getProbability());	
+}
+
+}
+else//put it in the databases add it to the probabilityArray as 1.
+{
+createAndInsertModel(tempKey);
+probabilityArray.add(tempKey);
+
+}
+
+}
+}
 }
 
 /*
@@ -2115,15 +2172,15 @@ Model tempModel = new Model();
 */
 private Model createAndInsertModel(String clip_txt_number)
 {
-	Model model = new Model(); //declare a new object only once
-	// and reuse objects below
-	model.setClipTxtNumber(clip_txt_number);
-	model.setProbability(1);
-	model.setTurnZero(0);
-	model.setTurnOne(0);
-	model.setTurnTwo(0);
-	model = datasource.createModel(model);
-	return model;
+Model model = new Model(); //declare a new object only once
+// and reuse objects below
+model.setClipTxtNumber(clip_txt_number);
+model.setProbability(1);
+model.setTurnZero(0);
+model.setTurnOne(0);
+model.setTurnTwo(0);
+model = datasource.createModel(model);
+return model;
 }
 
 
@@ -2144,37 +2201,6 @@ private Model createAndInsertModel(String clip_txt_number)
 
 
 
-private String getClip()
-{
-/*
-	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
-
-	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
-     
-    String entryvalue = sharedPreferences.getString( "language_key", "");
-    
-    Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
-    */
-
-/*    if (entryvalue.equals("EN"))
-		{
-			Log.d(TAG, "getclip 1");
-			rnd = new Random();	
-			Log.d(TAG, "getclip 2 " + ENGLISH_CLIP_ARRAY.size());
-			int index =  rnd.nextInt(ENGLISH_CLIP_ARRAY.size());
-			Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + index);
-			Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + ENGLISH_CLIP_ARRAY.get(index));
-			return ENGLISH_CLIP_ARRAY.get(index);
-		}
-	else
-		{*/
-			rnd = new Random();
-			int index = rnd.nextInt(probabilityArray.size());
-			return probabilityArray.get(index);
-		//}
-
-
-}
 
 /**
 * Example:
@@ -2184,88 +2210,103 @@ private String getClip()
 int turn_zero,int turn_one,int turn_two){
 */
 
-private void repeatHandler(String key)
+
+////////////Above the
+///////////
+//////////
+////////////////////
+
+private void repeatHandler()
 {
-Log.i(LOGTAG, " BJS update_data ");
-Log.i(LOGTAG, " BJS ProbArray.size == "+ probabilityArray.size() + "Last Turn = " + lastTurn);
-
-
+Log.i(LOGTAG, " BJS REPEAT " + lastTurn);
     int turn0,turn1, turn2, tempProb;
     
 Model tempModel = getModel(key);
 turn0 = tempModel.getTurnZero();
 turn1 = tempModel.getTurnOne();
 turn2 = tempModel.getTurnTwo();	
-    tempProb = tempModel.getProbability();
-Log.i(LOGTAG, " BJS update_data.tempProb = " + tempModel.getProbability());	
-  
-   ///if it is the same turn as a previous repeat
-   ///do not shift the turns.
-   ///increment turn0;
-   ///if the combined turns are greater than 3: double the probability;
-   if (lastTurn == 'R' && tempProb <2)
-   {
-Log.i(LOGTAG, " BJS update_data. LastTurn == R = " + tempModel.getProbability());	
 
-turn0 ++;
-Log.i(LOGTAG, " BJS update_data.turn0 = " + turn0);	
-/// If the combined turns = 4 or anything greater mod 4
-/// then the probability should be doubled. *I am considering 1 repeat = sort of equal to a turn
-if (((turn0+turn1+turn2)>3 ))
+int tempCount = turn0 + turn1 + turn2;
+int nextCount = 1 + turn0 + turn1;
+
+Log.i(LOGTAG, " BJS REPEAT tempCount = " + tempCount + "nextCount = " + nextCount);	
+
+    if ((tempCount==3))
+    {
+      Log.i(LOGTAG, "in tempcount == 3");	
+      Log.i(LOGTAG, " BJS REPEAT About to increase probArray");	
+        outputModel();
+        turn0++;
+        Log.i(LOGTAG, " BJS REPEAT About to increase probArray" + probabilityArray.size());	
+        probabilityArray.add(key);	
+        Log.i(LOGTAG, " BJS REPEAT After to increase probArray" + probabilityArray.size());	
+
+datasource.update_data(key,turn0,turn1 ,turn2 );
+outputModel();
+}
+else
 {
-Log.i(LOGTAG, " BJS update_data: probabilityArray was size: " + probabilityArray.size());	
-datasource.update_data(key, 2, turn0, turn1, turn2);
-probabilityArray.add(key);	
-Log.i(LOGTAG, " BJS update_data: probabilityArray is now size: " + probabilityArray.size());	
-Log.i(LOGTAG, " BJS update_data(combined turns =4): "+ key+ " " + turn0 + " " + turn1+ " " + turn2 + " " +getModel(key).getProbability());	
-}
-//increment the data
-datasource.update_data(key, tempProb,turn0, turn1, turn2);
-Log.i(LOGTAG, " BJS update_data "+ key+ " " + turn0 + " " + turn1+ " " + turn2 + " " + tempProb);	
+Log.i(LOGTAG, " BJS OUTPUT MODEL BEFORE");	
+outputModel();
+        turn0 = turn0 + 1;
+datasource.update_data(key, turn0, turn1, turn2);
+Log.i(LOGTAG, " BJS OUTPUT MODEL AFTER");	
+outputModel();
 
-    }
-   
-   else if (lastTurn == 'R' && tempProb > 1)
-    {
-    if (((turn0+turn1+turn2)<4 ))
-    {
-    datasource.update_data(key, 1,turn0, turn1, turn2);	
-}
-    }
-   ///
-   ////Move to its own function.
-   else if (lastTurn == 'S')
-   {
-
-   }
-  
-   //Log.i(LOGTAG, " BJS update_data "+ key+ " " + turn0 + " " + turn1+ " " + turn2 + " " + tempProb);
-
-   lastTurn = 'R';
 }
 
+}
+
+
+public void outputModel(){
+Model model = getModel(key);
+    Log.i(LOGTAG,"BJS "+ model.getClipTxtNumber()+ " " +
+     " " + model.getTurnZero() + " " + model.getTurnOne() + " " + model.getTurnTwo());
+
+}
+
+
+////////////below the
+///////////
+//////////
+////////////////////
 private void databaseSwipeHandler()
 {
-int turn0, turn1,turn2,tempProb;
+
+
+Log.i(LOGTAG, "BJS datapaseSwipeHandler ");
+
+int turn0, turn1,turn2;
 Model tempModel = getModel(key);
 turn0 = tempModel.getTurnZero();
 turn1 = tempModel.getTurnOne();
 turn2 = tempModel.getTurnTwo();
+int tempCount = turn0 + turn1 + turn2;/////previousTotalRepeats.
 Log.i(LOGTAG, "BJS DBSWIPEHN() PRIOR TO UPDATE "+ key+ " " + turn0 + " " + turn1+ " " + turn2 + " ");	
+        
+/**
+* If the there turn counts were added to more than four and
+* after this turn they will be less than 4 than the probability will
+* reduce return to the clip to a probability of one.
+*/
+if(tempCount > 3 && (turn0 + turn1)< 4 )
+{
+Log.i(LOGTAG,"BJS Size of the probability array is" + probabilityArray.size());
+probabilityArray.remove(key);
+Log.i(LOGTAG,"BJS Size of the probability array is now" + probabilityArray.size());
+}
 
 
-datasource.update_data(key, 1, 0, turn0, turn1);
+Log.i(LOGTAG, "BJS UPDATE & OUTPUT MODEL ");
+outputModel();	
+Log.i(LOGTAG, "BJS UPDATED MODEL");
+datasource.update_data(key, 0, turn0, turn1);
+outputModel();	
+Log.i(LOGTAG, "BJS UPDATE & OUTPUT MODEL ");
 
-tempModel = getModel(key);
-turn0 = tempModel.getTurnZero();
-turn1 = tempModel.getTurnOne();
-turn2 = tempModel.getTurnTwo();
-datasource.update_data(key, 1, 0, turn0, turn1);
-
-
-tempProb = tempModel.getProbability();
-
-Log.i(LOGTAG, " BJS DBSWIPEHN() POST UPDATE "+ key+ " " + turn0 + " " + turn1+ " " + turn2 + " ");	
+//Old stuff
+//tempProb = tempModel.getProbability();
+//Log.i(LOGTAG, " BJS DBSWIPEHN() POST UPDATE "+ key+ " " + turn0 + " " + turn1+ " " + turn2 + " ");
       
 }
 
@@ -2354,7 +2395,7 @@ List<HistoryModel> histModelList = hist_datasource.findAll();
 
 for (int i = 0; i < histModelList.size(); i++)
 {
-	
+
 Log.i(LOGTAG, "BJS HISTCLIP " +histModelList.get(i).getId() + " PROB "+ histModelList.get(i).get_clip_id() + " " + histModelList.get(i).get_short_hanzi());
 
 
@@ -2379,6 +2420,207 @@ outputHistModelList();
 
 return hmodel;
 
+}
+
+
+
+/********************************
+* End DATABASE STUFF
+*******************************/
+
+
+/********************************
+* BJS SHARED_PREFERENCES
+*******************************/
+private void tick_check()
+{
+// Log.i("tick_check", "BJS SP " + (current_tick));
+// if(current_tick + (mod_seconds) == 2400)
+if(((current_tick) % 2400) == 0 )
+{
+update_cliplistwithrepeats();
+}
+current_tick ++;
+}
+
+
+/*
+* 1) Clear the previous cliplistwith repeats
+* 2) Get the starting index from shared preferences
+* 3) If the starting index is less than 50 away from the
+* end of the array
+* Create a cliplistwithrepeats that will be of the sizestart index-cliplist.length
+* 4) Else create a cliplistwithrepeats that is length 50 + the added probability numbers.
+* 5)Update the shared preferences starting index
+*/
+private void update_cliplistwithrepeats()
+{
+Log.i(LOGTAG,"BJS clock update_cliplistwithrepeats() ");
+    //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+    String entryvalue = sharedPreferences.getString( "language_key", "");
+
+    ///if the entryvalue is english goto english setup
+if (entryvalue.equals("EN"))
+{
+update_english_cliplist_with_repeats();
+return;
+}
+
+int current_clip_index = get_current_clip_index_from_shared_prefs();
+Log.i(LOGTAG,"BJS clock starting index " + current_clip_index);
+
+
+if(current_clip_index + 50 > cliplist.length)
+{
+Log.i(LOGTAG,"ABOUT TO INITIALIZE SUBSET," + current_clip_index + " to " + cliplist.length);
+initialize_subset(current_clip_index, cliplist.length);
+store_current_clip_index_to_shared_prefs(current_clip_index);////This may be a do nothing issue
+
+}
+else
+{
+Log.i(LOGTAG,"ABOUT TO INITIALIZE SUBSET," + current_clip_index + " to " + current_clip_index + 50);
+initialize_subset(current_clip_index, current_clip_index + 50);
+store_current_clip_index_to_shared_prefs(current_clip_index + 10);
+}
+}
+
+public void update_english_cliplist_with_repeats()
+{
+//initialize_subset(get_current_eng_clip_index_from_shared_prefs(), cliplist.length);
+initialize_subset(0, cliplist.length);
+
+}
+
+
+
+private void initialize_subset(int startingClip, int limit)
+{
+    Log.i(LOGTAG, "BJS startingClip "+startingClip + "limit " + limit);
+    cliplistwithrepeats.clear();
+
+
+String tempKey;	
+Model tempModel = new Model();
+
+
+//get the data and create the probaility array with that
+//clip number the appropriate amount of times.
+
+for(int i = startingClip; i< limit; ++i)
+{
+// Log.i(LOGTAG, "BJS in for " + " " + i);
+
+tempKey = cliplist[i];
+//Log.i(LOGTAG, "BJS in tempKey " + tempKey );
+
+tempKey = tempKey.substring(0, tempKey.length() - 4);
+/*
+* If the data is already in the database:
+* 1)get the probabilty of the data by adding the turn fields
+* 2)add it to the probability
+* If data is not in the database:
+* 1)create and insert using Model class;
+* 2)add the clip number one time to the probabilityArray.
+*/
+if (datasource.isDataInDatabase(tempKey))
+{
+tempModel = datasource.findModel(tempKey);
+int turn0, turn1, turn2;
+turn0 = tempModel.getTurnZero();
+turn1 = tempModel.getTurnOne();
+turn2 = tempModel.getTurnTwo();
+
+if ((turn0 + turn1 + turn2)>3)
+{
+//Log.i(LOGTAG, "BJS adding REPEAT tempkey" + tempKey);
+
+cliplistwithrepeats.add(tempKey);
+
+}
+// Log.i(LOGTAG, "BJS adding tempkey " + tempKey);
+
+cliplistwithrepeats.add(tempKey);
+}
+
+else//put it in the databases add it to the probabilityArray as 1.
+{
+//Log.i(LOGTAG, "BJS adding tempkey" + tempKey);
+
+createAndInsertModel(tempKey);
+cliplistwithrepeats.add(tempKey);
+
+}
+
+
+}
+
+}
+
+
+
+
+
+
+//
+private void store_current_clip_index_to_shared_prefs(int current_clip_index)
+{
+	
+	SharedPreferences prefs = getSharedPreferences(SHAREDPREF_SET, MODE_PRIVATE);
+	SharedPreferences.Editor editor = prefs.edit();
+	editor.putInt(SHAREDPREF_CLIP_INDEX, current_clip_index);	
+	editor.commit();
+	Log.i("store_current_clip_to...", "BJS SP stored clip = " +
+	get_current_clip_index_from_shared_prefs());
+
+}
+
+public int get_current_clip_index_from_shared_prefs()
+{
+	SharedPreferences prefs = getSharedPreferences(SHAREDPREF_SET, Context.MODE_PRIVATE);
+	int extractedClipIndex = prefs.getInt(SHAREDPREF_CLIP_INDEX, 0);
+	Log.i("get_current_clip_index...","BJS SP extractedClipIndex = " + extractedClipIndex);
+	return extractedClipIndex;
+}
+
+private void store_current_tick_to_shared_prefs()
+{
+	SharedPreferences prefs = getSharedPreferences(SHAREDPREF_SET, Context.MODE_PRIVATE);
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putInt(SHAREDPREF_TOTAL_SECONDS, current_tick);
+    //commit the change
+    editor.commit();
+    Log.i("store_updated sec in sp ","BJS SP store_updated_sec_SP = " + get_current_tick_from_shared_prefs());
+    
+}
+private int get_current_tick_from_shared_prefs()
+{
+
+	SharedPreferences prefs = getSharedPreferences(SHAREDPREF_SET, Context.MODE_PRIVATE);
+	int extractedTick = prefs.getInt(SHAREDPREF_TOTAL_SECONDS, 0);	
+	Log.d("get_current_tick","BJS SP extracted ticks = " + extractedTick);	
+	return extractedTick;
+}
+
+private void store_current_eng_clip_index_to_shared_prefs(int current_clip_index)
+{
+	SharedPreferences prefs = getSharedPreferences(SHAREDPREF_SET, MODE_PRIVATE);
+	SharedPreferences.Editor editor = prefs.edit();
+	editor.putInt(SHAREDPREF_ENG_CLIP_INDEX, current_clip_index);	
+	editor.commit();
+	Log.i("store_current_clip_to...", "BJS SP stored clip = " +
+	get_current_clip_index_from_shared_prefs());
+
+}
+
+public int get_current_eng_clip_index_from_shared_prefs()
+{
+	
+	SharedPreferences prefs = getSharedPreferences(SHAREDPREF_SET, Context.MODE_PRIVATE);
+	int extractedClipIndex = prefs.getInt(SHAREDPREF_ENG_CLIP_INDEX, 0);
+	Log.i("get_current_clip_index...","BJS SP extractedClipIndex = " + extractedClipIndex);
+	return extractedClipIndex;
 }
 
 
