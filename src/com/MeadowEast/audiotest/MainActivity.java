@@ -1311,7 +1311,14 @@ public boolean onOptionsItemSelected(MenuItem item)
 			
 			return true;
 		case R.id.action_trans:
+			if (passkey == null)
+			{
+				Toast.makeText(MainActivity.this, "Touch press so we know which clip you want!", Toast.LENGTH_SHORT).show();
+			}
+			else
+			{
 			startActivity(new Intent(this, DisplayDict.class));
+			}
 			return true;
 		case R.id.action_stats:	
 			startActivity(new Intent(this, StatsActivity.class));
@@ -1433,8 +1440,8 @@ private Intent getDefaultShareIntent()
     //File file = new File(clipDir, key);
     if (!sample.exists() || !sample.canRead())
     {
-    	Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
-    	finish();
+    	Toast.makeText(this, "Attachment Error, make sure you in the right language mode!", Toast.LENGTH_SHORT).show();
+    	//finish();
        //return;
     }
    Uri uri = Uri.parse("file://" + sample);

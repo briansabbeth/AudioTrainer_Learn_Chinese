@@ -57,7 +57,7 @@ public class UnZipTask extends AsyncTask<String, Void, Boolean>
 			MainActivity.mProgressDialog.dismiss();
 			MainActivity.cliplist = MainActivity.clipDir.list();
 			MainActivity.readClipInfo();
-
+			//MainActivity.initializeAvailableClips();
 			}
 
 		
