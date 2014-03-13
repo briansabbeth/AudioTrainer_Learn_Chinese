@@ -1322,9 +1322,10 @@ public boolean onOptionsItemSelected(MenuItem item)
 			return true;
 		case R.id.action_stats:	
 			startActivity(new Intent(this, StatsActivity.class));
+			return true;
 		case R.id.share:
 			getDefaultShareIntent();
-		
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -1429,7 +1430,7 @@ private Intent getDefaultShareIntent()
     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
     intent.setType("audio/mp3");
   
-    intent.putExtra(Intent.EXTRA_SUBJECT, "SUBJECT");
+    intent.putExtra(Intent.EXTRA_SUBJECT, "TingShuo Hanzi Clip Attachment Email" );
     intent.putExtra(Intent.EXTRA_TEXT,hanzi.get(key));
     
     //startActivityForResult(Intent.createChooser(intent, "Send mail"), EMAIL_REQUEST);
@@ -1968,8 +1969,7 @@ public void updateSlideHistList()
 
 	histlist.add(new String (tempconstr) );
 	
-	Log.i(LOGTAG, "THIS what  has " + histlist);
-    
+	Log.i(LOGTAG, "THIS what  has " + histlist); 
 	
 	}
 	
@@ -2069,43 +2069,43 @@ String tempKey;
 Model tempModel = new Model();
 
 
-//get the data and create the probaility array with that
-//clip number the appropriate amount of times.
-for(int i = 0; i< cliplist.length; ++i)
-{
-tempKey = cliplist[i];
-tempKey = tempKey.substring(0, tempKey.length() - 4);
-availableClips.add(i, tempKey);
-/*
-* If the dats is already in the database:
-* 1)get the probabilty of the data by adding the turn fields
-* 2)add it to the probability
-* If data is not in the database:
-* 1)create and insert using Model class;
-* 2)add the clip number one time to the probabilityArray.
-*/
-if (datasource.isDataInDatabase(tempKey))
-{
-tempModel = datasource.findModel(tempKey);
-//if ((tempModel.getTurnZero() + tempModel.getTurnOne()+tempModel.getTurnTwo)>3())
-///
-///
-for(int j = 0; j<tempModel.getProbability(); ++j)
-{	
-probabilityArray.add(tempKey);
-Log.i(LOGTAG, "IN DBASE " + tempModel.getClipTxtNumber() + " PROB "+ tempModel.getProbability());	
-}
-
-}
-else//put it in the databases add it to the probabilityArray as 1.
-{
-createAndInsertModel(tempKey);
-probabilityArray.add(tempKey);
-
-}
-
-}
-//}
+	//get the data and create the probaility array with that
+	//clip number the appropriate amount of times.
+	for(int i = 0; i< cliplist.length; ++i)
+	{
+		tempKey = cliplist[i];
+		tempKey = tempKey.substring(0, tempKey.length() - 4);
+		availableClips.add(i, tempKey);
+		/*
+		* If the dats is already in the database:
+		* 1)get the probabilty of the data by adding the turn fields
+		* 2)add it to the probability
+		* If data is not in the database:
+		* 1)create and insert using Model class;
+		* 2)add the clip number one time to the probabilityArray.
+		*/
+		if (datasource.isDataInDatabase(tempKey))
+		{
+			tempModel = datasource.findModel(tempKey);
+			//if ((tempModel.getTurnZero() + tempModel.getTurnOne()+tempModel.getTurnTwo)>3())
+			///
+			///
+			for(int j = 0; j<tempModel.getProbability(); ++j)
+				{	
+					probabilityArray.add(tempKey);
+					Log.i(LOGTAG, "IN DBASE " + tempModel.getClipTxtNumber() + " PROB "+ tempModel.getProbability());	
+				}
+			
+		}
+		else//put it in the databases add it to the probabilityArray as 1.
+			{
+			createAndInsertModel(tempKey);
+			probabilityArray.add(tempKey);
+			
+			}
+	
+	}
+	//}
 }
 
 /*
@@ -2115,15 +2115,15 @@ probabilityArray.add(tempKey);
 */
 private Model createAndInsertModel(String clip_txt_number)
 {
-Model model = new Model(); //declare a new object only once
-// and reuse objects below
-model.setClipTxtNumber(clip_txt_number);
-model.setProbability(1);
-model.setTurnZero(0);
-model.setTurnOne(0);
-model.setTurnTwo(0);
-model = datasource.createModel(model);
-return model;
+	Model model = new Model(); //declare a new object only once
+	// and reuse objects below
+	model.setClipTxtNumber(clip_txt_number);
+	model.setProbability(1);
+	model.setTurnZero(0);
+	model.setTurnOne(0);
+	model.setTurnTwo(0);
+	model = datasource.createModel(model);
+	return model;
 }
 
 
