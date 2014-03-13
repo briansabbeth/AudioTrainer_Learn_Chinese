@@ -64,7 +64,8 @@ OnSharedPreferenceChangeListener{
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
     
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    @Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 	
     	SharedPreferences s = getSharedPreferences("MY_PREFS", 0);
 

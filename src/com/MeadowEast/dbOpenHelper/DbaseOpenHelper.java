@@ -1,7 +1,6 @@
 package com.MeadowEast.dbOpenHelper;
 
 import com.MeadowEast.model.Model;
-import com.MeadowEast.model.HistoryModel;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,6 +39,7 @@ public class DbaseOpenHelper extends SQLiteOpenHelper
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);	
 	}
 	
+	@Override
 	public void onCreate(SQLiteDatabase db) {
 		//creates the database table
 		//TABLE_CREATE is the constant command which creates the table
@@ -117,6 +117,7 @@ public class DbaseOpenHelper extends SQLiteOpenHelper
 
 
 	
+	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		//db.execSQL(CREATE_HIST_TABLE);
 

@@ -1,8 +1,5 @@
 package com.MeadowEast.Settings;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;

@@ -7,21 +7,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.MeadowEast.R;
-import com.MeadowEast.audiotest.MainActivity;
-
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class CheckUpdate extends AsyncTask<String, String, String> 
 {

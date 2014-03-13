@@ -65,7 +65,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.MeadowEast.Settings.PrefsActivity;
 import com.MeadowEast.Settings.StatsActivity;
-import com.MeadowEast.UpdateService.Alarm;
 import com.MeadowEast.UpdateService.CheckUpdate;
 import com.MeadowEast.UpdateService.DownloadService;
 import com.MeadowEast.UpdateService.UnZip;
@@ -510,11 +509,11 @@ public static  void readClipInfo() {
 					//System.out.println("here1");
 					//add timeElapsed to array
 					//System.out.println("Time elapsed: " + elapsedMillis);
-					weekly.add((int) index, currentTime);
+					weekly.add(index, currentTime);
 					//This function will make sure each 
 					//index does not have more than 60 seconds
 					//temporary index value
-					int i = (int) index;
+					int i = index;
 					//if value in index is over 1000ms (60s)
 					while (weekly.get(i) > 1000){
 					//subtract 1000ms from index
@@ -554,7 +553,7 @@ public static  void readClipInfo() {
 				int tempIndex = 0;
 				//System.out.println("here7");
 				//find value of latest index
-				tempIndex = (int) (index + difference);
+				tempIndex = index + difference;
 				//System.out.println("here8");
 				//if value of one week is exceeded start removing from top
 				if (tempIndex > 10079){
@@ -565,7 +564,7 @@ public static  void readClipInfo() {
 				}
 				//System.out.println("here10");
 				//fill in value of 0 for indexes where no time is used
-				for (int i = (int) (index /*+ 1*/); i < tempIndex; ++i){
+				for (int i = (index /*+ 1*/); i < tempIndex; ++i){
 					//System.out.println("here11");
 					weekly.add(i, (long) 0);
 				}
@@ -573,12 +572,12 @@ public static  void readClipInfo() {
 				//update index with latest value
 				index = tempIndex;
 				//System.out.println("here13");
-				weekly.add((int) index, currentTime);
+				weekly.add(index, currentTime);
 				System.out.println("here14");
 				//Log.i(LOGTAG, "Variable updated" + weekly.get((int) index));
 				//System.out.
 				//System.out.println("here15");
-				int i = (int) index;
+				int i = index;
 				while (weekly.get(i) > 1000){
 					int temp = (int) (weekly.get(i) - 1000);
 					weekly.add(i, (long) 1000);
@@ -607,17 +606,17 @@ public static  void readClipInfo() {
 			//SAME Minute
 			if (cMinute == pMinute){
 				int tempIndex = 0;
-				tempIndex = (int) (index + difference);
+				tempIndex = index + difference;
 				if (tempIndex > 10079){
 					tempIndex = tempIndex - 1;
 					weekly.remove(0);
 				}
-				for (int i = (int) (index + 1); i < tempIndex; ++i){
+				for (int i = index + 1; i < tempIndex; ++i){
 					weekly.add(i, (long) 0);
 				}
 				index = tempIndex;
-				weekly.add((int) index, currentTime);
-				int i = (int) index;
+				weekly.add(index, currentTime);
+				int i = index;
 				while (weekly.get(i) > 1000){
 					int temp = (int) (weekly.get(i) - 1000);
 					weekly.add(i, (long) 1000);
@@ -631,17 +630,17 @@ public static  void readClipInfo() {
 			if (cMinute != pMinute){
 				int tempIndex = 0;
 				difference = difference + (cMinute - pMinute);
-				tempIndex = (int) (index + difference);
+				tempIndex = index + difference;
 				if (tempIndex > 10079){
 					tempIndex = tempIndex -1;
 					weekly.remove(0);
 				}
-				for (int i = (int) (index + 1); i < tempIndex; ++i){
+				for (int i = index + 1; i < tempIndex; ++i){
 					weekly.add(i, (long) 0);
 				}
 				index = tempIndex;
-				weekly.add((int) index, currentTime);
-				int i = (int) index;
+				weekly.add(index, currentTime);
+				int i = index;
 				while (weekly.get(i) > 1000){
 					int temp = (int) (weekly.get(i) - 1000);
 					weekly.add(i, (long) 1000);
@@ -663,17 +662,17 @@ public static  void readClipInfo() {
 			//same minute
 			if (cMinute == pMinute){
 				int tempIndex = 0;
-				tempIndex = (int) (index + difference);
+				tempIndex = index + difference;
 				if (tempIndex > 10079){
 					tempIndex = tempIndex - 1;
 					weekly.remove(0);
 				}
-				for (int i = (int) (index + 1); i < tempIndex; ++i){
+				for (int i = index + 1; i < tempIndex; ++i){
 					weekly.add(i, (long) 0);
 				}
 				index = tempIndex;
-				weekly.add((int) index, currentTime);
-				int i = (int) index;
+				weekly.add(index, currentTime);
+				int i = index;
 				while (weekly.get(i) > 1000){
 					int temp = (int) (weekly.get(i) - 1000);
 					weekly.add(i, (long) 1000);
@@ -687,17 +686,17 @@ public static  void readClipInfo() {
 			if (cMinute != pMinute){
 				int tempIndex = 0;
 				difference = difference + (cMinute - pMinute);
-				tempIndex = (int) (index + difference);
+				tempIndex = index + difference;
 				if (tempIndex > 10079){
 					tempIndex = tempIndex - 1;
 					weekly.remove(0);
 				}
-				for (int i = (int) (index + 1); i < tempIndex; ++i){
+				for (int i = index + 1; i < tempIndex; ++i){
 					weekly.add(i, (long) 0);
 				}
 				index = tempIndex;
-				weekly.add((int) index, currentTime);
-				int i = (int) index;
+				weekly.add(index, currentTime);
+				int i = index;
 				while (weekly.get(i) > 1000){
 					int temp = (int) (weekly.get(i) - 1000);
 					weekly.add(i, (long) 1000);
@@ -714,17 +713,17 @@ public static  void readClipInfo() {
 			//same minute
 			if (cMinute == pMinute){
 				int tempIndex = 0;
-				tempIndex = (int) (index + difference);
+				tempIndex = index + difference;
 				if (tempIndex > 10079){
 					tempIndex = tempIndex - 1;
 					weekly.remove(0);
 				}
-				for (int i = (int) (index + 1); i < tempIndex; ++i){
+				for (int i = index + 1; i < tempIndex; ++i){
 					weekly.add(i, (long) 0);
 				}
 				index = tempIndex;
-				weekly.add((int) index, currentTime);
-				int i = (int) index;
+				weekly.add(index, currentTime);
+				int i = index;
 				while (weekly.get(i) > 1000){
 					int temp = (int) (weekly.get(i) - 1000);
 					weekly.add(i, (long) 1000);
@@ -738,17 +737,17 @@ public static  void readClipInfo() {
 			if (cMinute != pMinute){
 				int tempIndex = 0;
 				difference = difference + (cMinute - pMinute);
-				tempIndex = (int) (index + difference);
+				tempIndex = index + difference;
 				if (tempIndex > 10079){
 					tempIndex = tempIndex - 1;
 					weekly.remove(0);
 				}
-				for (int i = (int) (index + 1); i < tempIndex; ++i){
+				for (int i = index + 1; i < tempIndex; ++i){
 					weekly.add(i, (long) 0);
 				}
 				index = tempIndex;
-				weekly.add((int) index, currentTime);
-				int i = (int) index;
+				weekly.add(index, currentTime);
+				int i = index;
 				while (weekly.get(i) > 1000){
 					int temp = (int) (weekly.get(i) - 1000);
 					weekly.add(i, (long) 1000);
@@ -886,10 +885,11 @@ public static  void readClipInfo() {
     	     lastTurn = '0';
     	     turnCount = 0;
     	          //sameTurn = false;
+    	     cliplistwithrepeats = new ArrayList<String>();
     	     availableClips = new ArrayList<String>();
-    	     //englishavailableClips = new ArrayList<String>();
+    	     englishavailableClips = new ArrayList<String>();
     	          probabilityArray = new ArrayList<String>();
-    	          //ENGLISH_CLIP_ARRAY = new ArrayList<String>();
+    	          ENGLISH_CLIP_ARRAY = new ArrayList<String>();
     	          Log.i(LOGTAG, "ABOUT TO OPEN DATASOURCE");
     	            
     	datasource = new TingshuoDatasource(this);
@@ -1947,17 +1947,19 @@ boolean pref = sharedPreferences.getBoolean("night_mode_key", false);
 		cliplist = clipDir.list();
 		//Toast.makeText(getApplicationContext(),"HELLO FROM PREF! ", Toast.LENGTH_SHORT).show();
 		Log.i(LOGTAG,"Startup String value inside EN" + pref); 
+		update_cliplistwithrepeats();
 	}
 	else
 	{
 		clipDir = new File(mainDir, "clips");
 		cliplist = clipDir.list();
 		Log.i(LOGTAG,"Startup String value inside else " + pref); 
-
+		update_cliplistwithrepeats();
 	}
 	
 	readClipInfo();
-	initializeAvailableClips();
+	//initializeAvailableClips();
+	//initialize_subset();
 Log.i(TAG, "You came in and entered RESUME");
 
 
@@ -2004,34 +2006,52 @@ private String getClip()
 //private String getClip()
 //{
 //
-// SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
 //
-// sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+//sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
 //
-// String entryvalue = sharedPreferences.getString( "language_key", "");
+//String entryvalue = sharedPreferences.getString( "language_key", "");
 //
-// Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
+//Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
 //
 //
-// if (entryvalue.equals("EN"))
-// {
-// Log.d(TAG, "getclip 1");
-// rnd = new Random();
-// Log.d(TAG, "getclip 2 " + ENGLISH_CLIP_ARRAY.size());
-// int index = rnd.nextInt(ENGLISH_CLIP_ARRAY.size());
-// Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + index);
-// Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + ENGLISH_CLIP_ARRAY.get(index));
-// return ENGLISH_CLIP_ARRAY.get(index);
-// }
-// else
-// {
-// rnd = new Random();
-// int index = rnd.nextInt(cliplistwithrepeats.size());
-// return cliplistwithrepeats.get(index);
-// }
+//if (entryvalue.equals("EN"))
+//{
+//Log.d(TAG, "getclip 1");
+//rnd = new Random();
+//Log.d(TAG, "getclip 2 " + ENGLISH_CLIP_ARRAY.size());
+//int index = rnd.nextInt(ENGLISH_CLIP_ARRAY.size());
+//Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + index);
+//Log.d(TAG, "REturn of ENGLISH_CLIP_ARRAY.get(index) " + ENGLISH_CLIP_ARRAY.get(index));
+//return ENGLISH_CLIP_ARRAY.get(index);
+//}
+//else
+//{
+//rnd = new Random();
+//int index = rnd.nextInt(cliplistwithrepeats.size());
+//return cliplistwithrepeats.get(index);
+//}
 //
 //
 //}
+
+/********************************
+* DATABASE STUFF
+*******************************/
+
+/* setAvailableClips():
+* 0)Clear availableClips and probability array.
+* 1)Get a substring of each entry in the cliplist (clipString -.mp3)
+* 2)Put each substring into the availableClips arrayList.
+* 3)Look into the database, if the data is not there enter it, the probability = 1
+* 3.5) If the data is there, find the probability,
+* 4)Enter it into the probabilty array the appropriate number of times
+* 5)??????Use the probabilityArray to randomly pick the next clip
+*
+* NOTE: This can be done on every update as well as every time
+* we rotate ten (ten go out and ten come in).
+*
+*/
 
 /********************************
 * DATABASE STUFF
@@ -2056,16 +2076,16 @@ private String getClip()
 private void initializeAvailableClips()
 {
    
-SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
 
-sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
      
     String entryvalue = sharedPreferences.getString( "language_key", "");
     
     Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
     
 
-if (entryvalue.equals("EN"))
+/*if (entryvalue.equals("EN"))
 {
 Log.i(LOGTAG, "BJS ENGLISH InINITIALIZE");
 
@@ -2085,12 +2105,12 @@ tempKey = cliplist[i];
 tempKey = tempKey.substring(0, tempKey.length() - 4);
 englishavailableClips.add(i, tempKey);
 
-/* * If the dats is already in the database:
+ * If the dats is already in the database:
 * 1)get the probabilty of the data by adding the turn fields
 * 2)add it to the probability
 * If data is not in the database:
 * 1)create and insert using Model class;
-* 2)add the clip number one time to the probabilityArray.*/
+* 2)add the clip number one time to the probabilityArray.
 
 if (datasource.isDataInDatabase(tempKey))
 {
@@ -2115,7 +2135,7 @@ ENGLISH_CLIP_ARRAY.add(tempKey);
 }
 }
 else
-{
+{*/
 Log.i(LOGTAG, "BJS InINITIALIZE");
 
 availableClips.clear();
@@ -2163,7 +2183,7 @@ probabilityArray.add(tempKey);
 
 }
 }
-}
+//}
 
 /*
 * Make a model to be inserted into the database;

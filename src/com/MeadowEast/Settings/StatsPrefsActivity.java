@@ -4,14 +4,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
 import com.MeadowEast.R;
 
 public class StatsPrefsActivity extends PreferenceActivity implements
@@ -62,7 +57,8 @@ OnSharedPreferenceChangeListener{
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
     
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    @Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 	
     	SharedPreferences s = getSharedPreferences("MY_PREFS", 0);
 

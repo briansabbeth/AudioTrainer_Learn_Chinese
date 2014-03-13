@@ -12,7 +12,8 @@ public class AlarmService extends Service
     
     static final String TAG = "AlarmService";
     
-    public void onCreate()
+    @Override
+	public void onCreate()
 	    {
 	        super.onCreate();       
 	    }

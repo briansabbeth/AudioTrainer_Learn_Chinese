@@ -11,7 +11,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.PowerManager;
 import android.util.Log;
-import android.widget.Toast;
 
 
 public class Alarm extends BroadcastReceiver 

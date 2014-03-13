@@ -21,10 +21,10 @@
             android:entries="@array/Languages"
             android:entryValues="@array/LanguageValues"   /> 
             
-        <EditTextPreference
+<!--         <EditTextPreference
 			android:key="time_usage_key"
 			android:title="7 Day Usage"
-			android:summary="A total of usage of 7 days." />
+			android:summary="A total of usage of 7 days." /> -->
         
           
             
