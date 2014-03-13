@@ -11,7 +11,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class CheckUpdate extends AsyncTask<String, String, String> 
 {
 	

@@ -14,7 +14,10 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class DownloadService 
 {
 	

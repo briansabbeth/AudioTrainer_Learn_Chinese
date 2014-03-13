@@ -14,7 +14,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class PrefsActivity extends PreferenceActivity implements
 OnSharedPreferenceChangeListener{
 	CheckBoxPreference isReg;

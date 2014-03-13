@@ -1,5 +1,9 @@
 package com.MeadowEast.UpdateService;
 
+/**
+ * @author Jonathan Kosar
+ *
+ */
 import java.io.IOException;
 
 import android.app.AlarmManager;

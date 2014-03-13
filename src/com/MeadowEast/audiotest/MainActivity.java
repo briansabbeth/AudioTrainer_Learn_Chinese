@@ -19,6 +19,7 @@ import java.util.Random;
 import com.MeadowEast.R;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -65,6 +66,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.MeadowEast.Settings.PrefsActivity;
 import com.MeadowEast.Settings.StatsActivity;
+import com.MeadowEast.UpdateService.AlarmService;
 import com.MeadowEast.UpdateService.CheckUpdate;
 import com.MeadowEast.UpdateService.DownloadService;
 import com.MeadowEast.UpdateService.UnZip;
@@ -78,7 +80,7 @@ import com.MeadowEast.model.Model;
  */
 public class MainActivity extends Activity  implements OnClickListener,
 		OnLongClickListener, OnGesturePerformedListener,  OnGestureListener  {
-
+	public static int globalitem;
 	public static long NSJtotalTime;
     private int turnCount;
 	public static ProgressDialog mProgressDialog;
@@ -968,7 +970,7 @@ public static  void readClipInfo() {
 		rnd = new Random();
 		 /**********************DATABASE CODE******************************************/
 		Log.i(LOGTAG, " BJS CLIPLISTLENGTH "+ cliplist.length + " initializingclips()");
-		initializeAvailableClips();
+		//initializeAvailableClips();
 		        modelList = datasource.findAll();
 		        Log.i(LOGTAG,"BJS Outputting the modellist");
 		        outputModelList(modelList);	
@@ -1187,7 +1189,7 @@ public static  void readClipInfo() {
 	@Override
 	public boolean onLongClick(View v)
 	{
-		repeatHandler();
+		//repeatHandler();
 		
 		switch (v.getId()) 
 		{
@@ -1273,14 +1275,14 @@ public static  void readClipInfo() {
 	  	Log.i(TAG,"After ALarm");*/
     }
  
-	 @Override
+	@Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
-
+	
 	@Override
-public boolean onOptionsItemSelected(MenuItem item) 
+	public boolean onOptionsItemSelected(MenuItem item) 
 	{
 		
 		if (actionBarDrawerToggle.onOptionsItemSelected(item)) 
@@ -1324,7 +1326,32 @@ public boolean onOptionsItemSelected(MenuItem item)
 			}
 			else
 			{
-			startActivity(new Intent(this, DisplayDict.class));
+				final CharSequence[] items = {"English", "Chinese", "Spanish"};
+
+			    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			    builder.setTitle("Choose the language to look up in");
+			    builder.setItems(items, new DialogInterface.OnClickListener() {
+			       
+			    	public void onClick(DialogInterface dialog, int item ) {
+			            Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
+			            
+			            globalitem = item;
+			            startActivity(new Intent(MainActivity.this, DisplayDict.class));
+			          
+			        
+			        }
+
+				
+			    }).show();
+
+			    
+				//openAlert(v);
+						/*AlertDialog alertDialog = Dialog.create();
+				         // show alert
+				        alertDialog.show();	*/
+				//alert.show();
+				//showDialog(current_clip_index);
+				//startActivity(new Intent(this, DisplayDict.class));
 			}
 			return true;
 		case R.id.action_stats:	
@@ -1339,6 +1366,19 @@ public boolean onOptionsItemSelected(MenuItem item)
 
 	}
 	
+
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		
+	    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+	    builder.setTitle("Test")
+	           .setItems(R.array.Languages, new DialogInterface.OnClickListener() {
+	               public void onClick(DialogInterface dialog, int which) {
+	               // The 'which' argument contains the index position
+	               // of the selected item
+	           }
+	    });
+	    return builder.create();
+	}
 ////////////////////////CIRCLE IS REPEAT/////////////////////////
 ////    ////    ////    ////    ////    ////    ////    ////
 	///    ////    ////    ////    ////    ////    ////
@@ -1555,7 +1595,8 @@ void initializationcheck()
 	
 		if (clipszip.exists() && englishfilezip.exists() )
 		{	
-			new CheckUpdate().execute();
+			//new CheckUpdate().execute();
+			startService(new Intent(this, AlarmService.class));
 		}
 		
 	
@@ -1942,6 +1983,7 @@ boolean pref = sharedPreferences.getBoolean("night_mode_key", false);
 	
     
     if (pref2.equals("EN"))
+    	
 	{
 		clipDir = new File(englishDir, "clips");
 		cliplist = clipDir.list();
@@ -1949,7 +1991,7 @@ boolean pref = sharedPreferences.getBoolean("night_mode_key", false);
 		Log.i(LOGTAG,"Startup String value inside EN" + pref); 
 		update_cliplistwithrepeats();
 	}
-	else
+    else
 	{
 		clipDir = new File(mainDir, "clips");
 		cliplist = clipDir.list();
@@ -2076,7 +2118,7 @@ private String getClip()
 private void initializeAvailableClips()
 {
    
-	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+/*	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
 
 	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
      
@@ -2085,7 +2127,7 @@ private void initializeAvailableClips()
     Log.d(TAG, "Entryvalue inside of getClip " + entryvalue);
     
 
-/*if (entryvalue.equals("EN"))
+if (entryvalue.equals("EN"))
 {
 Log.i(LOGTAG, "BJS ENGLISH InINITIALIZE");
 
@@ -2481,11 +2523,16 @@ Log.i(LOGTAG,"BJS clock update_cliplistwithrepeats() ");
     String entryvalue = sharedPreferences.getString( "language_key", "");
 
     ///if the entryvalue is english goto english setup
-if (entryvalue.equals("EN"))
-{
-update_english_cliplist_with_repeats();
-return;
-}
+
+   if (entryvalue.equals("EN"))
+		{
+			initialize_subset(get_current_eng_clip_index_from_shared_prefs(),cliplist.length);
+			return;
+		
+		//update_english_cliplist_with_repeats();
+		//return;
+		
+		}
 
 int current_clip_index = get_current_clip_index_from_shared_prefs();
 Log.i(LOGTAG,"BJS clock starting index " + current_clip_index);

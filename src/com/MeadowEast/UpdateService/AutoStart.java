@@ -3,7 +3,10 @@ package com.MeadowEast.UpdateService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class AutoStart extends BroadcastReceiver
 {   
     Alarm alarm = new Alarm();

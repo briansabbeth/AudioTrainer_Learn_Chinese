@@ -8,7 +8,10 @@ import android.preference.PreferenceActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.MeadowEast.R;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class StatsPrefsActivity extends PreferenceActivity implements
 OnSharedPreferenceChangeListener{
 	

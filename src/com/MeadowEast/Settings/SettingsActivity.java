@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
 import com.MeadowEast.R;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class SettingsActivity extends Activity 
 {	
 	static final String TAG = "ShowSettingsActivity";

@@ -13,7 +13,10 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.MeadowEast.audiotest.MainActivity;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class UnZipTask extends AsyncTask<String, Void, Boolean> 
 {
 

@@ -8,7 +8,10 @@ import android.widget.TextView;
 
 import com.MeadowEast.R;
 import com.MeadowEast.audiotest.MainActivity;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class StatsActivity extends Activity 
 {	
 		static final String TAG = "StatsActivity";

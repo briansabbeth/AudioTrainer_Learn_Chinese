@@ -6,7 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class UnZipUtil
 {
 private String zipFile;

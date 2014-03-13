@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-
+/**
+ * @author Jonathan Kosar
+ *
+ */
 public class AlarmService extends Service
 {
     Alarm alarm = new Alarm();
