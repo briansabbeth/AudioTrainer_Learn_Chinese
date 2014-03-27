@@ -35,7 +35,7 @@ String lastClip;
 TingshuoDatasource datasource;
     
 String LOGTAG = "BJS DB ";
-
+////////////
 boolean sameTurn;
 
 /**
